@@ -28,7 +28,7 @@ public class ImportDataModel {
     private String fileName;
 
     @Column(name = "total_amount")
-    private int totalAmount;
+    private Long totalAmount;
 
     @Column(name = "number_of_total")
     private int numberOfTotal;
