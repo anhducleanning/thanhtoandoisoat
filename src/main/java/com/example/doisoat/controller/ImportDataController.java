@@ -1,11 +1,9 @@
 package com.example.doisoat.controller;
 
-import com.example.doisoat.model.ImportDataModel;
-import com.example.doisoat.model.SessionModel;
+import com.example.doisoat.model.ImportDataEntity;
 import com.example.doisoat.service.ImportDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,9 +25,9 @@ public class ImportDataController {
 
 
     @GetMapping("/add")
-    public ImportDataModel add() throws SQLException {
+    public ImportDataEntity add() throws SQLException {
         Timestamp ts = Timestamp.valueOf(LocalDateTime.now(ZoneId.of("UTC")));
-        ImportDataModel importDataModel = new ImportDataModel();
+        ImportDataEntity importDataModel = new ImportDataEntity();
 
         importDataModel.setImportCode("31232");
         importDataModel.setImportType("f");
@@ -56,7 +54,7 @@ public class ImportDataController {
     }
 
     @GetMapping("/")
-    public List<ImportDataModel> getAllImportData(){
+    public List<ImportDataEntity> getAllImportData(){
         return importDataService.getListImportData();
     }
 }

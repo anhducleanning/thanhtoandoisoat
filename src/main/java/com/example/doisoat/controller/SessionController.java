@@ -1,7 +1,7 @@
 package com.example.doisoat.controller;
 
-import com.example.doisoat.model.PartnerSystemModel;
-import com.example.doisoat.model.SessionModel;
+import com.example.doisoat.model.PartnerSystemEntity;
+import com.example.doisoat.model.SessionEntity;
 import com.example.doisoat.service.SessionSerivce;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,20 +24,20 @@ public class SessionController {
     SessionSerivce sessionSerivce;
 
     @GetMapping("/all")
-    List<SessionModel> getAll(){
+    List<SessionEntity> getAll(){
         return sessionSerivce.getAllSessions();
     }
 
     @GetMapping("/add")
-    public SessionModel add() throws SQLException {
+    public SessionEntity add() throws SQLException {
         Timestamp ts = Timestamp.valueOf(LocalDateTime.now(ZoneId.of("UTC")));
-        SessionModel sessionModel = new SessionModel();
+        SessionEntity sessionModel = new SessionEntity();
 
         int systemId2 = sessionSerivce.getPartnerId("IMEDIA");
         sessionModel.setPeriodDate("Khum biết");
-        sessionModel.setCreated_at(ts);
-        sessionModel.setUpdated_at(ts);
-        sessionModel.setStatus(1);
+        sessionModel.setCreatedAt(ts);
+        sessionModel.setUpdatedAt(ts);
+        sessionModel.setStatus((byte) 1);
         sessionModel.setSystemId1(2);
         sessionModel.setSystemId2(systemId2);
 
@@ -47,7 +47,7 @@ public class SessionController {
     }
 
     @GetMapping("/getListPartner")
-    public List<PartnerSystemModel> getAllPartner(){
+    public List<PartnerSystemEntity> getAllPartner(){
         return sessionSerivce.getPartnerSystem();
     }
 

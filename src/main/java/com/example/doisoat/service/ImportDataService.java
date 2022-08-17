@@ -1,7 +1,6 @@
 package com.example.doisoat.service;
 
-import com.example.doisoat.model.ImportDataModel;
-import com.example.doisoat.model.SessionModel;
+import com.example.doisoat.model.ImportDataEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -26,9 +25,10 @@ public class ImportDataService implements ImportSerivceDAO {
 
 
 
-    RowMapper<ImportDataModel> rowMapper = (rs, rowNum) -> {
-        ImportDataModel importDataModel = new ImportDataModel();
-        importDataModel.setId(rs.getInt("import_id"));
+    RowMapper<ImportDataEntity> rowMapper = (rs, rowNum) -> {
+        ImportDataEntity importDataModel = new ImportDataEntity();
+
+        importDataModel.setImportId(rs.getInt("import_id"));
         importDataModel.setImportCode(rs.getString("import_code"));
         importDataModel.setImportType(rs.getString("import_type"));
         importDataModel.setSystemCode(rs.getString("system_code"));
@@ -52,13 +52,13 @@ public class ImportDataService implements ImportSerivceDAO {
 
 
     @Override
-    public List<ImportDataModel> getListImportData() {
+    public List<ImportDataEntity> getListImportData() {
         String sql = "SELECT * FROM import_data id ";
         return jdbcTemplate.query(sql,rowMapper);
     }
 
     @Override
-    public Integer create(ImportDataModel importDataModel) throws SQLException {
+    public Integer create(ImportDataEntity importDataModel) throws SQLException {
         String sql = "INSERT INTO doisoat_vv_te.import_data\n" +
                 "(import_code, import_type, system_code, file_name, total_amount, number_of_total, number_of_success, number_of_fail, import_date, import_by, description, order_no, period_date, action_code, status, partner_system_id, session_id, evidence_file)\n" +
                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
