@@ -2,6 +2,7 @@ package com.example.doisoat.controller;
 
 import com.example.doisoat.model.ImportDataEntity;
 import com.example.doisoat.service.ImportDataService;
+import com.example.doisoat.service.SessionSerivce;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,11 +23,16 @@ public class ImportDataController {
     @Autowired
     ImportDataService importDataService;
 
+    @Autowired
+    SessionSerivce sessionSerivce;
+
 
 
     @GetMapping("/add")
     public ImportDataEntity add() throws SQLException {
         Timestamp ts = Timestamp.valueOf(LocalDateTime.now(ZoneId.of("UTC")));
+        int partnerId = sessionSerivce.getPartnerId("ATOMI");
+
         ImportDataEntity importDataModel = new ImportDataEntity();
 
         importDataModel.setImportCode("31232");
@@ -44,7 +50,7 @@ public class ImportDataController {
         importDataModel.setPeriodDate("16-08-2022");
         importDataModel.setActionCode("");
         importDataModel.setStatus(1);
-        importDataModel.setPartnerSystemId(2);
+        importDataModel.setPartnerSystemId(partnerId);
         importDataModel.setSessionId(48);
         importDataModel.setEvidenceFile("");
 

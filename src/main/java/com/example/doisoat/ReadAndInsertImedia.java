@@ -1,3 +1,6 @@
+package com.example.doisoat;
+
+import com.example.doisoat.model.ImediaEntity;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -29,16 +32,16 @@ public class ReadAndInsertImedia {
 
     public static void main(String[] args) throws IOException {
         final String excelFilePath = "C:\\Users\\Administrator\\Desktop\\fileExcel\\Book2.xlsx";
-        final List<ImediaModel> books = readExcel(excelFilePath);
-        for (ImediaModel book : books) {
+        final List<ImediaEntity> books = readExcel(excelFilePath);
+        for (ImediaEntity book : books) {
             System.out.println(book);
         }
     }
 
 
 
-    public static List<ImediaModel> readExcel(String excelFilePath) throws IOException {
-        List<ImediaModel> listBooks = new ArrayList<>();
+    public static List<ImediaEntity> readExcel(String excelFilePath) throws IOException {
+        List<ImediaEntity> listBooks = new ArrayList<>();
 
         // Get file
         InputStream inputStream = new FileInputStream(new File(excelFilePath));
@@ -58,11 +61,12 @@ public class ReadAndInsertImedia {
                 continue;
             }
 
+
             // Get all cells
             Iterator<Cell> cellIterator = nextRow.cellIterator();
 
             // Read cells and set value for book object
-            ImediaModel model = new ImediaModel();
+            ImediaEntity model = new ImediaEntity();
             while (cellIterator.hasNext()) {
                 //Read cell
                 Cell cell = cellIterator.next();
@@ -70,51 +74,40 @@ public class ReadAndInsertImedia {
                 if (cellValue == null || cellValue.toString().isEmpty()) {
                     continue;
                 }
-                // Set value for book object
                 int columnIndex = cell.getColumnIndex();
                 switch (columnIndex) {
                     case COLUMN_INDEX_TAIKHOAN:
                         model.setTaiKhoan((String) getCellValue(cell));
-                        System.out.println((String) getCellValue(cell));
                         break;
                     case COLUMN_INDEX_SYSTEMTRAYID:
                         model.setSystemTrayId(String.valueOf(getCellValue(cell)));
-                        System.out.println(getCellValue(cell));
                         break;
                     case COLUMN_INDEX_MENHGIA:
                         model.setMenhGia(String.valueOf(getCellValue(cell)));
-                        System.out.println(getCellValue(cell));
                         break;
                     case COLUMN_INDEX_TRANGTHAI:
                         model.setTrangThai(String.valueOf(getCellValue(cell)));
-                        System.out.println(getCellValue(cell));
                         break;
                     case COLUMN_INDEX_NGAYTHANG:
 //                        book.setNgayThang(String.valueOf(cell.getDateCellValue());
                         String pattern = "MM/dd/yyyy HH:mm:ss";
                         DateFormat df = new SimpleDateFormat(pattern);
                         String todayAsString = df.format(cell.getDateCellValue());
-                        System.out.println(todayAsString);
                         break;
                     case COLUMN_INDEX_REQUESTID:
                         model.setRequestID(String.valueOf(getCellValue(cell)));
-                        System.out.println(getCellValue(cell));
                         break;
                     case COLUMN_INDEX_PHONE:
                         model.setPhone(String.valueOf(getCellValue(cell)));
-                        System.out.println(getCellValue(cell));
                         break;
                     case COLUMN_INDEX_CHIETKHAU:
                         model.setChietKhau(String.valueOf(getCellValue(cell)));
-                        System.out.println(getCellValue(cell));
                         break;
                     case COLUMN_INDEX_SOLUONG:
                         model.setSoLuong(String.valueOf(getCellValue(cell)));
-                        System.out.println(getCellValue(cell));
                         break;
                     case COLUMN_INDEX_NHAMANG:
                         model.setNhaMang(String.valueOf(getCellValue(cell)));
-                        System.out.println(getCellValue(cell));
                         break;
                     default:
                         break;

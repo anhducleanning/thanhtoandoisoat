@@ -30,6 +30,7 @@ public class SessionController {
 
     @GetMapping("/add")
     public SessionEntity add() throws SQLException {
+        //Cần nhận Code Partner để biết đối tác nào
         Timestamp ts = Timestamp.valueOf(LocalDateTime.now(ZoneId.of("UTC")));
         SessionEntity sessionModel = new SessionEntity();
 
