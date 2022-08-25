@@ -2,6 +2,7 @@ package com.example.doisoat;
 
 import com.example.doisoat.model.ImediaBuyCardEntity;
 import com.example.doisoat.model.ImediaTopUpEntity;
+import com.example.doisoat.model.TransEntity;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -12,53 +13,37 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class ReadImedia {
 
 
+
     public static final int STT = 0;
     public static final int THOI_GIAN = 1;
-    public static final int NHA_CUNG_CAP = 2;
-    public static final int MENH_GIA = 3;
-    public static final int GIA_CHIET_KHAU = 4;
     public static final int MA_YEU_CAU = 5;
-    public static final int MA_GIAO_DICH = 6;
-    public static final int TRANG_THAI = 7;
-    public static final int TAI_KHOAN_DICH = 8;
 
 
     public static void main(String[] args) throws IOException, ParseException {
-        ReadImedia readImedia = new ReadImedia();
+
+        final String excelFilePath = "C:\\Users\\saotr\\Desktop\\fileDoiSoat\\buycard.xls";
+        final String link = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\topup.xls";
+        String TimeS = "24/08/2022 00:00:46";
+        String TimeE = "24/08/2022 23:59:59";
 
 
-//        final String excelFilePath = "C:\\Users\\Administrator\\Desktop\\fileExcel\\ImediaTopUpClone.xls";
-//        String TimeS = "23/08/2022 00:00:46";
-//        String TimeE = "23/08/2022 23:59:59";
-//        final List<ImediaTopUpEntity> books = readImedia.readInmediaTopup(excelFilePath,TimeS, TimeE);
-//        for (ImediaTopUpEntity book : books) {
-//            if(book.getThoiGian()!=null){
-//                System.out.println(book);
-//            }
-//        }
+        Map<String,TransEntity> buyCard =  readInmedia(excelFilePath,TimeS,TimeE);
 
 
-        final String path = "C:\\Users\\Administrator\\Desktop\\fileExcel\\ImediaBuyCard.xls";
-        String TimeSt = "23/08/2022 00:00:46";
-        String TimeEn = "23/08/2022 23:59:59";
-        final List<ImediaBuyCardEntity> listBuyCard = readImedia.readInmediaBuyCard(path, TimeSt, TimeEn);
-        for (ImediaBuyCardEntity list : listBuyCard) {
-            System.out.println(list);
+        for (String key : buyCard.keySet()) {
+            TransEntity value = buyCard.get(key);
+            System.out.println(key + " = " + value);
         }
 
 
     }
 
-    public List<ImediaTopUpEntity> readInmediaTopup(String excelFilePath, String TimeS, String TimeE) throws IOException, ParseException {
-        List<ImediaTopUpEntity> listBooks = new ArrayList<>();
-
+    public static Map<String,TransEntity> readInmedia(String excelFilePath, String TimeS, String TimeE) throws IOException, ParseException {
         // Get file
         InputStream inputStream = new FileInputStream(new File(excelFilePath));
 
@@ -68,107 +53,14 @@ public class ReadImedia {
         // Get sheet
         Sheet sheet = workbook.getSheetAt(0);
 
-        int lastRow = sheet.getLastRowNum();
-
-        int faild = 0;
-        int total = 0;
-        int sussess = 0;
-
-
-        for (int i = 7; i <= lastRow; i++) {
-            Row row = sheet.getRow(i);
-            ImediaTopUpEntity model = new ImediaTopUpEntity();
-            total++;
-            for (Cell cell : row) {
-                Cell getCellTime = row.getCell(THOI_GIAN);
-                if (CompareBetweenDateTime(TimeS, TimeE, String.valueOf(getCellValue(getCellTime))) == false) {
-                    break;
-                }
-
-//                Object cellValue = getCellValue(cell);
-
-//                if (cellValue == null || cellValue.toString().isEmpty()) {
-//
-//                    continue;
-//                }
-//
-                sussess++;
-                String a = String.valueOf(getCellValue(cell));
-
-                int columnIndex = cell.getColumnIndex();
-
-                try {
-                    switch (columnIndex) {
-                        case STT:
-                            model.setSTT(String.valueOf(getCellValue(cell)));
-                            break;
-                        case THOI_GIAN:
-                            model.setThoiGian(String.valueOf(getCellValue(cell)));
-                            break;
-                        case NHA_CUNG_CAP:
-                            model.setNhaCungCap(String.valueOf(getCellValue(cell)));
-                            break;
-                        case MENH_GIA:
-                            model.setMenhGia(String.valueOf(getCellValue(cell)));
-                            break;
-                        case GIA_CHIET_KHAU:
-                            model.setGiaChietKhau(String.valueOf(getCellValue(cell)));
-                            break;
-                        case MA_YEU_CAU:
-                            model.setMaYeuCau(split(String.valueOf(getCellValue(cell))));
-                            break;
-                        case MA_GIAO_DICH:
-                            model.setMaGiaoDich(split(String.valueOf(getCellValue(cell))));
-                            break;
-                        case TRANG_THAI:
-                            model.setTrangThai(String.valueOf(getCellValue(cell)));
-                            break;
-                        case TAI_KHOAN_DICH:
-                            model.setTaiKhoanDich(String.valueOf(getCellValue(cell)));
-                            break;
-                        default:
-                            break;
-                    }
-
-                } catch (Exception e) {
-
-                }
-                listBooks.add(model);
-            }
-
-
-        }
-        System.out.println("Total:" + total);
-        System.out.println("Faild:" + faild);
-        System.out.println("Susses:" + sussess);
-        workbook.close();
-        inputStream.close();
-
-        return listBooks;
-    }
-
-    public List<ImediaBuyCardEntity> readInmediaBuyCard(String excelFilePath, String TimeS, String TimeE) throws IOException, ParseException {
-        List<ImediaBuyCardEntity> listBooks = new ArrayList<>();
-
-        // Get file
-        InputStream inputStream = new FileInputStream(new File(excelFilePath));
-
-        // Get workbook
-        Workbook workbook = getWorkbook(inputStream, excelFilePath);
-
-        // Get sheet
-        Sheet sheet = workbook.getSheetAt(0);
+        Map<String, TransEntity> map = new LinkedHashMap<String, TransEntity>();
 
         int test = sheet.getLastRowNum();
 
-        int faild = 0;
-        int total = 0;
-        int sussess = 0;
 
         for (int i = 7; i <= test; i++) {
             Row row = sheet.getRow(i);
-            ImediaBuyCardEntity model = new ImediaBuyCardEntity();
-            total++;
+            TransEntity tran = new TransEntity();
             for (Cell cell : row) {
 
                 Cell getCellTime = row.getCell(THOI_GIAN);
@@ -176,60 +68,35 @@ public class ReadImedia {
                     break;
                 }
 
-//                if (cellValue == null || cellValue.toString().isEmpty()) {
-//
-//                    continue;
-//                }
-                sussess++;
                 int columnIndex = cell.getColumnIndex();
-
                 switch (columnIndex) {
                     case STT:
-                        model.setSTT(String.valueOf(getCellValue(cell)));
+                        tran.setID(String.valueOf(getCellValue(cell)));
                         break;
                     case THOI_GIAN:
-                        model.setThoiGian(String.valueOf(getCellValue(cell)));
-                        break;
-                    case NHA_CUNG_CAP:
-                        model.setNhaCungCap(String.valueOf(getCellValue(cell)));
-                        break;
-                    case MENH_GIA:
-                        model.setMenhGia(String.valueOf(getCellValue(cell)));
-                        break;
-                    case GIA_CHIET_KHAU:
-                        model.setGiaChietKhau(String.valueOf(getCellValue(cell)));
+                        tran.setDATETIME_LOG(String.valueOf(getCellValue(cell)));
                         break;
                     case MA_YEU_CAU:
-                        model.setMaYeuCau(split(String.valueOf(getCellValue(cell))));
-                        break;
-                    case MA_GIAO_DICH:
-                        model.setMaGiaoDich(split(String.valueOf(getCellValue(cell))));
-                        break;
-                    case TRANG_THAI:
-                        model.setSeriThe(split(String.valueOf(getCellValue(cell))));
-                        break;
-                    case TAI_KHOAN_DICH:
-                        model.setChietKhau(String.valueOf(getCellValue(cell)));
+                        tran.setTRANS_ID(split(String.valueOf(getCellValue(cell))));
                         break;
                     default:
+                        tran.setCUSTOMER_CODE("Mua mã thẻ");
                         break;
                 }
 
 
             }
 
-            if (model.getThoiGian() != null)
-                listBooks.add(model);
+            if (tran.getDATETIME_LOG() != null)
+                map.put(tran.getTRANS_ID(),tran);
 
 
         }
-        System.out.println("Total:" + total);
-        System.out.println("Faild:" + faild);
-        System.out.println("Susses:" + sussess);
+
         workbook.close();
         inputStream.close();
 
-        return listBooks;
+        return map;
     }
 
     // Get Workbook
@@ -273,7 +140,7 @@ public class ReadImedia {
 
     //Split number if exits "'"
 
-    public String split(String text) {
+    public static String split(String text) {
         if (text.startsWith("'")) {
             String[] part = text.split("'");
             String part1 = part[1];

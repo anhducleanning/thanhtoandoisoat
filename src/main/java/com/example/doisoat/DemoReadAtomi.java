@@ -3,6 +3,7 @@ package com.example.doisoat;
 import com.example.doisoat.model.AtomiEntity;
 import com.example.doisoat.model.TransEntity;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,55 +11,40 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DemoReadAtomi {
     public static void main(String[] args) throws IOException, ParseException {
-        String path = "C:\\Users\\Administrator\\Desktop\\fileExcel\\AtomiClone.tsv";
-        String timeS = "2022-08-23 00:00:33";
-        String timeE = "2022-08-23 23:59:00";
+
+        String link = "C:\\Users\\saotr\\Desktop\\fileDoiSoat\\atmd_pg_2022-08-24.tsv";
+        String timeS = "2022-08-24 00:00:33";
+        String timeE = "2022-08-24 23:59:59";
 
 
-        Map<String,TransEntity> maps =  readFileAtomi(path,timeS,timeE);
-        for (String key : maps.keySet()) {
-            TransEntity value = maps.get(key);
-            System.out.println(key + " = " + value);
-        }
 
-    }
-    public static Map<String,TransEntity> readFileAtomi(String path, String timeS, String timeE) throws IOException, ParseException {
 
-        int n =  ReadDataAtomi.countLine(path);
-        TransEntity[] atomiTran = new TransEntity[n];
-
-        List<TransEntity> list = new ArrayList<>();
         Map<String,TransEntity> map = new LinkedHashMap <String, TransEntity>();
-        for (int i = 1; i < n; i++) {
 
-            Scanner sc = new Scanner(Files.readAllLines(Paths.get(path)).get(i));
-            String[] split = sc.nextLine().split("\t");
-            atomiTran[i] = new TransEntity(split[0],split[1],split[3],split[6]);
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(link))) {
+            List<String>  lists = br.lines().skip(1).collect(Collectors.toList());
+            for (String list: lists) {
+                String[] split = list.split("\t");
+                TransEntity atomiTrans = new TransEntity(split[0],split[1],split[3],split[6]);
+                if(CompareBetweenDateTime(timeS,timeE,atomiTrans.getDATETIME_LOG())){
+                    map.put(split[1], atomiTrans);
+                }
 
-            String datetime =atomiTran[i].getDATETIME_LOG();
-            if(CompareBetweenDateTime(timeS,timeE,datetime)==true){
-                map.put(split[1], atomiTran[i]);
             }
-        }
-        return map;
-    }
-
-    public static int countLine(String path){
-        Path pathFile = Paths.get(path);
-        int lines = 0;
-
-        try {
-            lines = (int) Files.lines(pathFile).count();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return lines;
-    }
+        for (String key : map.keySet()) {
+            TransEntity value = map.get(key);
+            System.out.println(key + " = " + value);
+        }
 
+    }
     public static boolean CompareBetweenDateTime(String timeStart, String timeEnd, String timeRow) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
