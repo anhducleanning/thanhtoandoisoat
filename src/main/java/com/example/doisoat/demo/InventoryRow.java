@@ -3,23 +3,12 @@ package com.example.doisoat.demo;
 public class InventoryRow {
     private String name;
     private String type;
-    private Character availability;
-    private String returndate;
+    private String age;
 
-    public InventoryRow(String name, String type, Character availability,
-                        String returndate) {
+    public InventoryRow(String name, String type, String age) {
         this.name = name;
         this.type = type;
-        this.availability = availability;
-        this.returndate = returndate;
-    }
-
-    public String getReturndate() {
-        return returndate;
-    }
-
-    public void setReturndate(String returndate) {
-        this.returndate = returndate;
+        this.age = age;
     }
 
     public String getName() {
@@ -38,15 +27,11 @@ public class InventoryRow {
         this.type = type;
     }
 
-    public Character getAvailability() {
-        return availability;
+    public String getAge() {
+        return age;
     }
 
-    public void setAvailability(Character availability) {
-        this.availability = availability;
-    }
-
-    public String toString() {
-        return name + "   " + type + "   " + availability + "   " + returndate;
+    public void setAge(String age) {
+        this.age = age;
     }
 }

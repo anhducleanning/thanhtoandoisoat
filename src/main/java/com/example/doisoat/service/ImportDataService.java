@@ -1,5 +1,6 @@
 package com.example.doisoat.service;
 
+import com.example.doisoat.model.ImportDataDetailEntity;
 import com.example.doisoat.model.ImportDataEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,9 +22,6 @@ public class ImportDataService implements ImportSerivceDAO {
     public ImportDataService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
-
-
 
     RowMapper<ImportDataEntity> rowMapper = (rs, rowNum) -> {
         ImportDataEntity importDataModel = new ImportDataEntity();
@@ -98,5 +96,52 @@ public class ImportDataService implements ImportSerivceDAO {
         }
         return id;
 
+    }
+
+
+    @Override
+    public ImportDataEntity getFindById(int id) {
+        String sql = "SELECT * FROM import_data id WHERE import_id = " + id;
+        return  jdbcTemplate.queryForObject(sql,rowMapper);
+    }
+
+
+    RowMapper<ImportDataDetailEntity> rowMapperDataDetail = (rs, rowNum) -> {
+        ImportDataDetailEntity importDataModel = new ImportDataDetailEntity();
+
+        importDataModel.setImportDetailId(rs.getLong("import_detail_id"));
+        importDataModel.setImportCode(rs.getString("import_code"));
+        importDataModel.setRefId(rs.getString("ref_id"));
+        importDataModel.setTransType(rs.getString("trans_type"));
+        importDataModel.setAmount(rs.getInt("amount"));
+        importDataModel.setTransName(rs.getString("trans_name"));
+        importDataModel.setTransStatus(rs.getString("trans_status"));
+        importDataModel.setTransTime(rs.getTimestamp("trans_time"));
+        importDataModel.setTransId(rs.getString("trans_id"));
+        importDataModel.setImportId(rs.getInt("import_id"));
+        return importDataModel;
+    };
+
+    @Override
+    public ImportDataDetailEntity create(ImportDataDetailEntity importDataDetailEntity) {
+        String sql = "INSERT INTO doisoat_vv_te.import_data_detail\n" +
+                "(import_code, ref_id, trans_type, amount, trans_name, trans_status, trans_time, trans_id, import_id)\n" +
+                "VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        int insert = jdbcTemplate.update(sql,
+                importDataDetailEntity.getImportCode(),
+                importDataDetailEntity.getRefId(),
+                importDataDetailEntity.getTransType(),
+                importDataDetailEntity.getAmount(),
+                importDataDetailEntity.getTransName(),
+                importDataDetailEntity.getTransStatus(),
+                importDataDetailEntity.getTransTime(),
+                importDataDetailEntity.getTransId(),
+                importDataDetailEntity.getImportId()
+                );
+        if(insert == 1){
+            log.info("ImportDataDetailEntity Susess" );
+        }
+        return importDataDetailEntity;
     }
 }

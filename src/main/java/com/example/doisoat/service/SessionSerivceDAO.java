@@ -15,4 +15,6 @@ public interface SessionSerivceDAO {
     List<PartnerSystemEntity> getPartnerSystem();
 
     Integer getPartnerId(String codePartner);
+
+    SessionEntity getSessionById(int id);
 }

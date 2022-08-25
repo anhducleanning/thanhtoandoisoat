@@ -10,8 +10,8 @@ public class AtomiEntity {
     @Column(name = "compare_id")
     private int id;
 
-    private String VV;
-    private String TID;
+    private String LV24H_REF_NO;
+    private String ATMD_TRANS_ID;
     private String RESPONSE_CODE;
     private String DATETIME_LOG;
     private String TRANS_TYPE;
@@ -24,9 +24,11 @@ public class AtomiEntity {
     private String QUANTITY;
     private String PARTNER_TRANS_ID;
 
-    public AtomiEntity( String VV, String TID, String RESPONSE_CODE, String DATETIME_LOG, String TRANS_TYPE, String CUSTOMER_CODE, String SERVICE_CODE, String SERVICE_PROVIDER, String AMOUNT, String RESPONSE_CODE_PROVIDER, String PROVIDER_CODE, String QUANTITY, String PARTNER_TRANS_ID) {
-        this.VV = VV;
-        this.TID = TID;
+
+    public AtomiEntity( String LV24H_REF_NO, String ATMD_TRANS_ID, String RESPONSE_CODE, String DATETIME_LOG, String TRANS_TYPE, String CUSTOMER_CODE, String SERVICE_CODE, String SERVICE_PROVIDER, String AMOUNT, String RESPONSE_CODE_PROVIDER, String PROVIDER_CODE, String QUANTITY, String PARTNER_TRANS_ID) {
+
+        this.LV24H_REF_NO = LV24H_REF_NO;
+        this.ATMD_TRANS_ID = ATMD_TRANS_ID;
         this.RESPONSE_CODE = RESPONSE_CODE;
         this.DATETIME_LOG = DATETIME_LOG;
         this.TRANS_TYPE = TRANS_TYPE;
@@ -38,13 +40,14 @@ public class AtomiEntity {
         this.PROVIDER_CODE = PROVIDER_CODE;
         this.QUANTITY = QUANTITY;
         this.PARTNER_TRANS_ID = PARTNER_TRANS_ID;
+
     }
 
     @Override
     public String toString() {
         return "AtomiEntity{" +
-                "VV='" + VV + '\'' +
-                ", TID='" + TID + '\'' +
+                ", LV24H_REF_NO='" + LV24H_REF_NO + '\'' +
+                ", ATMD_TRANS_ID='" + ATMD_TRANS_ID + '\'' +
                 ", RESPONSE_CODE='" + RESPONSE_CODE + '\'' +
                 ", DATETIME_LOG='" + DATETIME_LOG + '\'' +
                 ", TRANS_TYPE='" + TRANS_TYPE + '\'' +
@@ -59,6 +62,9 @@ public class AtomiEntity {
                 '}';
     }
 
+    public AtomiEntity() {
+    }
+
     public int getId() {
         return id;
     }
@@ -67,20 +73,20 @@ public class AtomiEntity {
         this.id = id;
     }
 
-    public String getVV() {
-        return VV;
+    public String getLV24H_REF_NO() {
+        return LV24H_REF_NO;
     }
 
-    public void setVV(String VV) {
-        this.VV = VV;
+    public void setLV24H_REF_NO(String LV24H_REF_NO) {
+        this.LV24H_REF_NO = LV24H_REF_NO;
     }
 
-    public String getTID() {
-        return TID;
+    public String getATMD_TRANS_ID() {
+        return ATMD_TRANS_ID;
     }
 
-    public void setTID(String TID) {
-        this.TID = TID;
+    public void setATMD_TRANS_ID(String ATMD_TRANS_ID) {
+        this.ATMD_TRANS_ID = ATMD_TRANS_ID;
     }
 
     public String getRESPONSE_CODE() {
@@ -170,4 +176,6 @@ public class AtomiEntity {
     public void setPARTNER_TRANS_ID(String PARTNER_TRANS_ID) {
         this.PARTNER_TRANS_ID = PARTNER_TRANS_ID;
     }
+
+
 }

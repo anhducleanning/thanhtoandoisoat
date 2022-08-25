@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Service;
 
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
@@ -100,6 +101,18 @@ public class SessionSerivce implements SessionSerivceDAO {
             log.info("Không tồn tài id đối tác" + codePartner);
         }
         return id;
+    }
+
+    @Override
+    public SessionEntity getSessionById(int id) {
+        String sql = "";
+        try {
+             sql = "SELECT * FROM `session` s WHERE ID = " + id;
+            
+        }catch (Exception e){
+            System.out.println(e);
+        }
+         return  jdbcTemplate.queryForObject(sql,rowMapper);
     }
 
 
