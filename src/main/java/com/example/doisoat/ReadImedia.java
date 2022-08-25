@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 public class ReadImedia {
 
@@ -49,8 +48,8 @@ public class ReadImedia {
         final String path = "C:\\Users\\Administrator\\Desktop\\fileExcel\\ImediaBuyCard.xls";
         String TimeSt = "23/08/2022 00:00:46";
         String TimeEn = "23/08/2022 23:59:59";
-        final List<ImediaBuyCardEntity> listBuyCard = readImedia.readInmediaBuyCard(path,TimeSt, TimeEn);
-        for (ImediaBuyCardEntity list: listBuyCard) {
+        final List<ImediaBuyCardEntity> listBuyCard = readImedia.readInmediaBuyCard(path, TimeSt, TimeEn);
+        for (ImediaBuyCardEntity list : listBuyCard) {
             System.out.println(list);
         }
 
@@ -76,16 +75,14 @@ public class ReadImedia {
         int sussess = 0;
 
 
-
-
         for (int i = 7; i <= lastRow; i++) {
             Row row = sheet.getRow(i);
             ImediaTopUpEntity model = new ImediaTopUpEntity();
-            total ++;
+            total++;
             for (Cell cell : row) {
-            Cell getCellTime = row.getCell(THOI_GIAN);
-            if(CompareBetweenDateTime(TimeS,TimeE,String.valueOf(getCellValue(getCellTime)))==false){
-                   break;
+                Cell getCellTime = row.getCell(THOI_GIAN);
+                if (CompareBetweenDateTime(TimeS, TimeE, String.valueOf(getCellValue(getCellTime))) == false) {
+                    break;
                 }
 
 //                Object cellValue = getCellValue(cell);
@@ -95,8 +92,8 @@ public class ReadImedia {
 //                    continue;
 //                }
 //
-             sussess ++;
-             String a =   String.valueOf(getCellValue(cell));
+                sussess++;
+                String a = String.valueOf(getCellValue(cell));
 
                 int columnIndex = cell.getColumnIndex();
 
@@ -133,7 +130,7 @@ public class ReadImedia {
                             break;
                     }
 
-                }catch (Exception e){
+                } catch (Exception e) {
 
                 }
                 listBooks.add(model);
@@ -141,14 +138,15 @@ public class ReadImedia {
 
 
         }
-        System.out.println("Total:"+total);
-        System.out.println("Faild:"+faild);
-        System.out.println("Susses:"+sussess);
+        System.out.println("Total:" + total);
+        System.out.println("Faild:" + faild);
+        System.out.println("Susses:" + sussess);
         workbook.close();
         inputStream.close();
 
         return listBooks;
     }
+
     public List<ImediaBuyCardEntity> readInmediaBuyCard(String excelFilePath, String TimeS, String TimeE) throws IOException, ParseException {
         List<ImediaBuyCardEntity> listBooks = new ArrayList<>();
 
@@ -170,11 +168,11 @@ public class ReadImedia {
         for (int i = 7; i <= test; i++) {
             Row row = sheet.getRow(i);
             ImediaBuyCardEntity model = new ImediaBuyCardEntity();
-            total ++;
+            total++;
             for (Cell cell : row) {
 
                 Cell getCellTime = row.getCell(THOI_GIAN);
-                if(CompareBetweenDateTime(TimeS,TimeE,String.valueOf(getCellValue(getCellTime)))==false){
+                if (CompareBetweenDateTime(TimeS, TimeE, String.valueOf(getCellValue(getCellTime))) == false) {
                     break;
                 }
 
@@ -182,54 +180,52 @@ public class ReadImedia {
 //
 //                    continue;
 //                }
-                sussess ++;
+                sussess++;
                 int columnIndex = cell.getColumnIndex();
 
-                    switch (columnIndex) {
-                        case STT:
-                            model.setSTT(String.valueOf(getCellValue(cell)));
-                            break;
-                        case THOI_GIAN:
+                switch (columnIndex) {
+                    case STT:
+                        model.setSTT(String.valueOf(getCellValue(cell)));
+                        break;
+                    case THOI_GIAN:
                         model.setThoiGian(String.valueOf(getCellValue(cell)));
-                            break;
-                        case NHA_CUNG_CAP:
-                            model.setNhaCungCap(String.valueOf(getCellValue(cell)));
-                            break;
-                        case MENH_GIA:
-                            model.setMenhGia(String.valueOf(getCellValue(cell)));
-                            break;
-                        case GIA_CHIET_KHAU:
-                            model.setGiaChietKhau(String.valueOf(getCellValue(cell)));
-                            break;
-                        case MA_YEU_CAU:
-                            model.setMaYeuCau(split(String.valueOf(getCellValue(cell))));
-                            break;
-                        case MA_GIAO_DICH:
-                            model.setMaGiaoDich(split(String.valueOf(getCellValue(cell))));
-                            break;
-                        case TRANG_THAI:
-                            model.setSeriThe(split(String.valueOf(getCellValue(cell))));
-                            break;
-                        case TAI_KHOAN_DICH:
-                            model.setChietKhau(String.valueOf(getCellValue(cell)));
-                            break;
-                        default:
-                            break;
-                    }
-
+                        break;
+                    case NHA_CUNG_CAP:
+                        model.setNhaCungCap(String.valueOf(getCellValue(cell)));
+                        break;
+                    case MENH_GIA:
+                        model.setMenhGia(String.valueOf(getCellValue(cell)));
+                        break;
+                    case GIA_CHIET_KHAU:
+                        model.setGiaChietKhau(String.valueOf(getCellValue(cell)));
+                        break;
+                    case MA_YEU_CAU:
+                        model.setMaYeuCau(split(String.valueOf(getCellValue(cell))));
+                        break;
+                    case MA_GIAO_DICH:
+                        model.setMaGiaoDich(split(String.valueOf(getCellValue(cell))));
+                        break;
+                    case TRANG_THAI:
+                        model.setSeriThe(split(String.valueOf(getCellValue(cell))));
+                        break;
+                    case TAI_KHOAN_DICH:
+                        model.setChietKhau(String.valueOf(getCellValue(cell)));
+                        break;
+                    default:
+                        break;
+                }
 
 
             }
 
-                if(model.getThoiGian()!=null)
+            if (model.getThoiGian() != null)
                 listBooks.add(model);
 
 
-
         }
-        System.out.println("Total:"+total);
-        System.out.println("Faild:"+faild);
-        System.out.println("Susses:"+sussess);
+        System.out.println("Total:" + total);
+        System.out.println("Faild:" + faild);
+        System.out.println("Susses:" + sussess);
         workbook.close();
         inputStream.close();
 
@@ -291,18 +287,18 @@ public class ReadImedia {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
         Date timeS = sdf.parse(timeStart);
-        Date timeE= sdf.parse(timeEnd);
+        Date timeE = sdf.parse(timeEnd);
         Date timeR = sdf.parse(timeRow);
 
         // compareTo
         int diffStart = timeS.compareTo(timeR);
         int diffEnd = timeE.compareTo(timeR);
 
-        if(diffStart <0 &&diffEnd >0) {
+        if (diffStart < 0 && diffEnd > 0) {
             return true;
-        } else if(diffStart == 0 || diffEnd ==0) {
+        } else if (diffStart == 0 || diffEnd == 0) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }

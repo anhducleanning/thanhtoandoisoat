@@ -1,56 +1,49 @@
 package com.example.doisoat.demo;
+import com.example.doisoat.model.TransEntity;
+
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class Test2 {
 
     public static void main(String[] args) {
-        HashSet<String> listA = new HashSet<String>();
-        HashSet<String> listB = new HashSet<String>();
+        Map<String, String> map1 = new HashMap<>();
+        map1.put("1","1");
+        map1.put("2","2");
+        map1.put("3","3");
+
+        Map<String, String> map2 = new HashMap<>();
+        map2.put("4","4");
+        map2.put("5","5");
+        map2.put("6","6");
+
+        Map<String, String> map3 = new HashMap<>();
+        Map<String, String> temp = new HashMap<>();
+        map3.putAll(map1);
+        map3.putAll(map2);
+        temp.putAll(map3);
 
 
-        for (int i = 0; i < 5; i++) {
-            listA.add(String.valueOf(i));
-            listB.add(String.valueOf(i+2));
-        }
+        Map<String, String> map4 = new HashMap<>();
+        map4.put("1","1");
+        map4.put("2","2");
+        map4.put("3","3");
 
-        System.out.println("--------After----------");
-        System.out.println(listA);
-        System.out.println(listB);
-
-
-        List<String> temp = new ArrayList<>();
-
-        for (String a:listA) {
-            for (String b:listB) {
-                if(!a.contains(b)){
-                   temp.add(a);
+        for (String keyAtomi :  map3.keySet()) {
+            for (String keyImedia : map4.keySet()) {
+                if (keyAtomi.equals(keyImedia)){
+                    temp.remove(keyAtomi);
                 }
             }
         }
 
-//        for (String a: listA) {
-//            for (String b: listB) {
-//                if(a.equals(b)){
-//                    System.out.println();
-//                    listB.remove(b);
-//                    listA.remove(a);
-//                    break;
-//                }
-//            }
-//
-//        }
 
-        for (String in:temp) {
-            listA.remove(in);
+
+        for (String key : temp.keySet()) {
+            System.out.println("key Atomi: " + key);
         }
 
 
-        System.out.println("--------Before----------");
-        System.out.println(listA);
-        System.out.println(listB);
     }
 }
 

@@ -3,8 +3,6 @@ package com.example.doisoat;
 import com.example.doisoat.model.AtomiEntity;
 import com.example.doisoat.model.TransEntity;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,38 +11,27 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class ReadDataAtomi {
+public class DemoReadAtomi {
     public static void main(String[] args) throws IOException, ParseException {
-        String path = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\atmd_pg_2022-08-24.tsv";
-        String timeS = "2022-08-24 00:00:33";
-        String timeE = "2022-08-24 8:59:59";
+        String path = "C:\\Users\\Administrator\\Desktop\\fileExcel\\AtomiClone.tsv";
+        String timeS = "2022-08-23 00:00:33";
+        String timeE = "2022-08-23 23:59:00";
 
 
-        Map<String,TransEntity> maps =  ReadFileAtomi(path,timeS,timeE);
+        Map<String,TransEntity> maps =  readFileAtomi(path,timeS,timeE);
         for (String key : maps.keySet()) {
             TransEntity value = maps.get(key);
             System.out.println(key + " = " + value);
         }
-    }
-    public static Map<String,TransEntity> ReadFileAtomi(String path,String timeS, String timeE) throws IOException, ParseException {
 
+    }
+    public static Map<String,TransEntity> readFileAtomi(String path, String timeS, String timeE) throws IOException, ParseException {
 
         int n =  ReadDataAtomi.countLine(path);
         TransEntity[] atomiTran = new TransEntity[n];
 
         List<TransEntity> list = new ArrayList<>();
         Map<String,TransEntity> map = new LinkedHashMap <String, TransEntity>();
-
-//        while (sc.hasNextLine()) {
-//            String[] split = sc.nextLine().split("\t");
-//            atomiEntity[0] = new AtomiEntity(split[0], split[1], split[2], split[3], split[4], split[5],
-//                    split[6], split[7], split[8], split[9], split[10], split[11], split[12]);
-//
-//            System.out.println(atomiEntity[0].getTID() + "-" + atomiEntity[0].getSERVICE_CODE());
-//            System.out.println(atomiEntity[0].toString());
-//        }
-
-
         for (int i = 1; i < n; i++) {
 
             Scanner sc = new Scanner(Files.readAllLines(Paths.get(path)).get(i));
@@ -56,7 +43,6 @@ public class ReadDataAtomi {
                 map.put(split[1], atomiTran[i]);
             }
         }
-        System.out.println("Tổng: " + map.size());
         return map;
     }
 
@@ -91,5 +77,5 @@ public class ReadDataAtomi {
         }else {
             return false;
         }
-    }
+}
 }
