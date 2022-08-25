@@ -1,35 +1,55 @@
-//package com.example.doisoat.demo;
-//
-//import java.io.*;
-//import java.text.SimpleDateFormat;
-//import java.util.*;
-//
-//public class ReadDataTSV {
-//    public static void main(String[] args) throws FileNotFoundException {
-//
-//        System.out.println("Start");
-//        Calendar cal = Calendar.getInstance();
-//        SimpleDateFormat dateReturn = new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
-//        cal.add(Calendar.DATE, 3);
-//
-//        Scanner input = new Scanner(System.in);
-//
-//        Scanner s = new Scanner(new File("C:\\Users\\Administrator\\Desktop\\fileExcel\\file.txt"));
-//        List<InventoryRow> videos = new ArrayList<InventoryRow>();
-//
-//
-//
-//        while (s.hasNextLine()) {
-//            String[] split = s.nextLine().split("   ");
-//
-//            // x.charAt(0) returns the first char of the string "x"
-//            videos.add(new InventoryRow(split[0], split[1], split[2].charAt(0), split[3]));
-//
-//
-//        }  System.out.println(videos.toString());
-//
-//        s.close();
-//
-//
-//    }
-//}
+package com.example.doisoat.demo;
+
+import com.example.doisoat.model.TransEntity;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Stream;
+
+public class ReadDataTSV {
+    public static void main(String[] args) throws FileNotFoundException {
+
+        String link = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\atmd_pg_2022-08-24.tsv";
+//        int n = countLine(link);
+        List<String> lists = new ArrayList<>();
+//        TransEntity[] atomiTran = new TransEntity[n];
+        Map<String,TransEntity> map = new LinkedHashMap <String, TransEntity>();
+        try (Scanner scanner = new Scanner(new File(link))) {
+            while (scanner.hasNext()){
+                lists.add(scanner.nextLine());
+
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        for (String list: lists) {
+            String[] split = list.split("\t");
+            TransEntity atomiTrans = new TransEntity(split[0],split[1],split[3],split[6]);
+                map.put(split[1], atomiTrans);
+
+        }
+
+
+        for (String key : map.keySet()) {
+            TransEntity value = map.get(key);
+            System.out.println(key + " = " + value);
+        }
+    }
+    public static int countLine(String path){
+        Path pathFile = Paths.get(path);
+        int lines = 0;
+
+        try {
+            lines = (int) Files.lines(pathFile).count();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return lines;
+    }
+}
