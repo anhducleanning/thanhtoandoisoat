@@ -21,10 +21,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Test {
     public static void main(String[] args) throws IOException, ParseException {
@@ -38,19 +35,15 @@ public class Test {
         mapA.put("8", "2");
 
         Map<String, String> mapB = new HashMap<String, String>();
-        mapB.put("2", "3");
-        mapB.put("3", "3");
-        mapB.put("4", "3");
-        mapB.put("5", "3");
-        mapB.put("6", "3");
-        mapB.put("7", "3");
-        mapB.put("8", "3");
+        mapB.put("9", "3");
+        mapB.put("10", "3");
+        mapB.put("11", "3");
+        mapB.put("12", "3");
+        mapB.put("13", "3");
+        mapB.put("14", "3");
+        mapB.put("15", "3");
 
 
-        Set<String> set = mapA.keySet();
-//        for (String key : set) {
-//            System.out.println(key + " " + mapA.get(key));
-//        }
 
         System.out.println("---------MAP A---------");
         Set<String> set1 = mapA.keySet();
@@ -63,25 +56,28 @@ public class Test {
             System.out.println(key + " " + mapB.get(key));
         }
 
-        Map<String, String> mapCloneA = new HashMap<>();
-        mapCloneA.putAll(mapA);
+        Map<String, String> mapCloneA = new LinkedHashMap<>();
+        mapA.putAll(mapB);
+        mapCloneA.putAll(mapB);
 
         System.out.println("---------Diffe---------");
-
-//        System.out.println("before" + set1 + mapA.get(set1));
-        for (String key1 : set1) {
-                for (String key2 : set2) {
-                    if (key1.equals(key2)) {
-                        mapCloneA.remove(key1);
-                    }
-                }
+        for (String key : mapA.keySet()) {
+            System.out.println(key + " " + mapA.get(key));
         }
+//        System.out.println("before" + set1 + mapA.get(set1));
+//        for (String key1 : set1) {
+//                for (String key2 : set2) {
+//                    if (key1.equals(key2)) {
+//                        mapCloneA.remove(key1);
+//                    }
+//                }
+//        }
 
 //
 //        mapCloneA.remove("2");
-        for (String key :  mapCloneA.keySet()) {
-            System.out.println(key + "-" + mapA.get(key));
-        }
+//        for (String key :  mapCloneA.keySet()) {
+//            System.out.println(key + "-" + mapA.get(key));
+//        }
 //
 //
 //        System.out.println("AfterRemove");

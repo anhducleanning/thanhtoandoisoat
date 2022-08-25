@@ -141,7 +141,7 @@ public class ReadImedia {
     //Split number if exits "'"
 
     public static String split(String text) {
-        if (text.startsWith("'")) {
+        if (text.trim().startsWith("'")) {
             String[] part = text.split("'");
             String part1 = part[1];
             return part1;

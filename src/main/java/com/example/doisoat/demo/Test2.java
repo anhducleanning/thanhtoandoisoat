@@ -11,19 +11,14 @@ public class Test2 {
 
     public static void main(String[] args) {
 
-        String fileName = "C:\\Users\\saotr\\Desktop\\fileDoiSoat\\testAtomi.tsv";
-        List<String> list = new ArrayList<>();
+        String  line = "                   '213213213";
+        System.out.println(line);
 
-        try (BufferedReader br = Files.newBufferedReader(Paths.get(fileName))) {
-
-            list = br.lines().skip(1).collect(Collectors.toList());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        for (String a:list) {
-            System.out.println(a);
+        System.out.println(line.trim());
+        if (line.trim().startsWith("'")) {
+            String[] part = line.split("'");
+            String part1 = part[1];
+            System.out.println(part1);
         }
     }
 }

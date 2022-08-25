@@ -14,36 +14,61 @@ public class CompareATOMI_IMEDIA {
             ReadDataAtomi atomi = new ReadDataAtomi();
 
         final String excelFilePath = "C:\\Users\\saotr\\Desktop\\fileDoiSoat\\topup1.xls";
+//        final String excelFilePath = "C:\\Users\\saotr\\Desktop\\fileDoiSoat\\imediaBuyCardTest.xls";
         String TimeS = "24/08/2022 00:00:00";
         String TimeE = "24/08/2022 23:59:59";
         //Get file Imedia Topup
         Map<String, TransEntity> mapTransImediaTopup = imedias.readInmedia(excelFilePath,TimeS,TimeE);
 
 
+        final String link = "C:\\Users\\saotr\\Desktop\\fileDoiSoat\\buycard.xls";
+//        final String link = "C:\\Users\\saotr\\Desktop\\fileDoiSoat\\imediaBuyCardTest.xls";
+        //Get file Imedia Topup
+        Map<String, TransEntity> mapTransImediaBuyCard = imedias.readInmedia(link,TimeS,TimeE);
+
+
+        Map<String, TransEntity> tenpImedia = new HashMap<>();
+        tenpImedia.putAll(mapTransImediaTopup);
+        tenpImedia.putAll(mapTransImediaBuyCard);
+
+//        System.out.println("-----------Imedia-----------------");
+//        for (String key : tenpImedia.keySet()) {
+//            System.out.println("key Imedia: " + key);
+//        }
+
         //Get File Atomi
-        String link = "C:\\Users\\saotr\\Desktop\\fileDoiSoat\\atmd_pg_2022-08-24.tsv";
+        String linkAtomi = "C:\\Users\\saotr\\Desktop\\fileDoiSoat\\atmd_pg_2022-08-24.tsv";
+//        String linkAtomi = "C:\\Users\\saotr\\Desktop\\fileDoiSoat\\testAtomi.tsv";
         String timeS = "2022-08-24 00:00:33";
         String timeE = "2022-08-24 23:59:00";
+        Map<String,TransEntity> mapTransAtomi =  atomi.readFileAtomi(timeS,timeE,linkAtomi);
 
-        Map<String,TransEntity> mapTransAtomi =  atomi.readFileAtomi(timeS,timeE,link);
 
+//        System.out.println("-----------Atomi-----------------");
+//        for (String key : mapTransAtomi.keySet()) {
+//            System.out.println("key Imedia: " + key);
+//        }
 
+        System.out.println("-----------Compare-----------------");
         Map<String,TransEntity> tempAtomiTopUp = new HashMap<>();
         tempAtomiTopUp.putAll(mapTransAtomi);
 
+        System.out.println( tempAtomiTopUp.size());
 
         //Check
         for (String keyAtomi :  mapTransAtomi.keySet()) {
-            for (String keyImedia : mapTransImediaTopup.keySet()) {
+            for (String keyImedia : tenpImedia.keySet()) {
                 if (keyAtomi.equals(keyImedia)){
                     tempAtomiTopUp.remove(keyAtomi);
+                    break;
                 }
             }
         }
 
-        for (String key : tempAtomiTopUp.keySet()) {
-            System.out.println("key Atomi: " + key);
-        }
+        System.out.println(  tempAtomiTopUp.size());
+//        for (String key : tempAtomiTopUp.keySet()) {
+//            System.out.println("key Atomi: " + key);
+//        }
 
     }
 }
