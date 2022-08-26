@@ -18,27 +18,25 @@ import java.util.stream.Collectors;
 public class ReadDataAtomi {
     public static void main(String[] args) throws IOException, ParseException {
 
-        String link = "C:\\Users\\saotr\\Desktop\\fileDoiSoat\\atmd_pg_2022-08-24.tsv";
-        String timeS = "2022-08-24 00:00:33";
-        String timeE = "2022-08-24 23:59:59";
+        String link = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file25\\atmd_pg_20220826.tsv";
+        String timeS = "2022-08-25 00:00:00";
+        String timeE = "2022-08-25 23:59:59";
 
 
         Map<String,TransEntity> maps = readFileAtomi(timeS,timeE,link);
-        for (String key : maps.keySet()) {
-            System.out.println(key + " " + maps.get(key));
-        }
+        System.out.println(maps.get("1111111111111111").getTRANG_THAI());
 
 
     }
 
-    public static Map<String,TransEntity> readFileAtomi(String timeS, String timeE, String link){
-        Map<String,TransEntity> map = new HashMap<>();
-        try (BufferedReader br = Files.newBufferedReader(Paths.get(link))) {
 
+    public static Map<String,TransEntity> readFileAtomi(String timeS, String timeE, String link){
+        Map<String,TransEntity> map = new LinkedHashMap<>();
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(link))) {
             List<String>  lists = br.lines().skip(1).collect(Collectors.toList());
             for (String list: lists) {
                 String[] split = list.split("\t");
-                TransEntity atomiTrans = new TransEntity(split[0],split[1],split[3],split[6]);
+                TransEntity atomiTrans = new TransEntity(split[0],split[1],split[3],split[2]);
                 if(CompareBetweenDateTime(timeS,timeE,atomiTrans.getDATETIME_LOG())){
                     map.put(split[1], atomiTrans);
                 }

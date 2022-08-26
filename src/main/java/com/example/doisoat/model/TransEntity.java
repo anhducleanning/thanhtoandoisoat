@@ -4,24 +4,13 @@ public class TransEntity {
     private String ID;
     private String TRANS_ID;
     private String DATETIME_LOG;
-    private String CUSTOMER_CODE;
+    private String TRANG_THAI;
 
-
-    public TransEntity(String ID, String TRANS_ID, String DATETIME_LOG, String CUSTOMER_CODE) {
+    public TransEntity(String ID, String TRANS_ID, String DATETIME_LOG, String TRANG_THAI) {
         this.ID = ID;
         this.TRANS_ID = TRANS_ID;
         this.DATETIME_LOG = DATETIME_LOG;
-        this.CUSTOMER_CODE = CUSTOMER_CODE;
-    }
-
-    @Override
-    public String toString() {
-        return "TransEntity{" +
-                "ID='" + ID + '\'' +
-                ", TRANS_ID='" + TRANS_ID + '\'' +
-                ", DATETIME_LOG='" + DATETIME_LOG + '\'' +
-                ", CUSTOMER_CODE='" + CUSTOMER_CODE + '\'' +
-                '}';
+        this.TRANG_THAI = TRANG_THAI;
     }
 
     public TransEntity() {
@@ -51,11 +40,21 @@ public class TransEntity {
         this.DATETIME_LOG = DATETIME_LOG;
     }
 
-    public String getCUSTOMER_CODE() {
-        return CUSTOMER_CODE;
+    public String getTRANG_THAI() {
+        return TRANG_THAI;
     }
 
-    public void setCUSTOMER_CODE(String CUSTOMER_CODE) {
-        this.CUSTOMER_CODE = CUSTOMER_CODE;
+    public void setTRANG_THAI(String TRANG_THAI) {
+        this.TRANG_THAI = TRANG_THAI;
+    }
+
+    @Override
+    public String toString() {
+        return "TransEntity{" +
+                "ID='" + ID + '\'' +
+                ", TRANS_ID='" + TRANS_ID + '\'' +
+                ", DATETIME_LOG='" + DATETIME_LOG + '\'' +
+                ", TRANG_THAI='" + TRANG_THAI + '\'' +
+                '}';
     }
 }
