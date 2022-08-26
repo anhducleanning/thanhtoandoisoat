@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 public class ReadDataTSV {
     public static void main(String[] args) throws FileNotFoundException, ParseException {
 
-        String link = "C:\\Users\\saotr\\Desktop\\fileDoiSoat\\atmd_pg_2022-08-24.tsv";
+        String link = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\atmd_pg_2022-08-24.tsv";
         String timeS = "2022-08-24 00:00:33";
         String timeE = "2022-08-24 23:59:59";
 
