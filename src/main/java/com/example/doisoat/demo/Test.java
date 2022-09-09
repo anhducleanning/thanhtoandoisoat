@@ -1,34 +1,17 @@
 package com.example.doisoat.demo;
 
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.ss.usermodel.Row;
+import com.example.doisoat.until.GlobalConfig;
+import com.example.doisoat.until.Until;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.*;
+import java.time.format.DateTimeFormatter;
 
 public class Test {
-    public static void main(String[] args) throws IOException, ParseException {
-       List<String> list = new ArrayList<>();
-       list.add("1");
-       list.add("2");
-        System.out.println(list.get(1));
+
+    public static void main(String[] args){
+        String timeDate = Until.convertTimeImedia( GlobalConfig.DATE_FORMAT_IMEDIA,GlobalConfig.DATE_FORMAT_ATOMI,"25/08/2022 00:00:31");
+        System.out.println(timeDate);
+
     }
 }
 

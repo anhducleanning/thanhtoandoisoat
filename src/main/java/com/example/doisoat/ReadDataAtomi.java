@@ -2,6 +2,8 @@ package com.example.doisoat;
 
 import com.example.doisoat.model.AtomiEntity;
 import com.example.doisoat.model.TransEntity;
+import com.example.doisoat.until.GlobalConfig;
+import com.example.doisoat.until.Until;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,7 +39,7 @@ public class ReadDataAtomi {
             for (String list: lists) {
                 String[] split = list.split("\t");
                 TransEntity atomiTrans = new TransEntity(split[0],split[1],split[3],split[2]);
-                if(CompareBetweenDateTime(timeS,timeE,atomiTrans.getDATETIME_LOG())){
+                if(Until.CompareBetweenDateTime(timeS,timeE,atomiTrans.getDATETIME_LOG(),GlobalConfig.DATE_FORMAT_ATOMI)){
                     map.put(split[1], atomiTrans);
                 }
 
@@ -48,23 +50,33 @@ public class ReadDataAtomi {
 
       return map;
     }
-    public static boolean CompareBetweenDateTime(String timeStart, String timeEnd, String timeRow) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        Date timeS = sdf.parse(timeStart);
-        Date timeE= sdf.parse(timeEnd);
-        Date timeR = sdf.parse(timeRow);
-
-        // compareTo
-        int diffStart = timeS.compareTo(timeR);
-        int diffEnd = timeE.compareTo(timeR);
-
-        if(diffStart <0 &&diffEnd >0) {
-            return true;
-        } else if(diffStart == 0 || diffEnd ==0) {
-            return true;
-        }else {
-            return false;
-        }
-    }
+//    public static boolean CompareBetweenDateTime(String timeStart, String timeEnd, String timeRow) throws ParseException {
+//
+//        try {
+//            if(timeRow==null||timeStart.equals("")){
+//                return false;
+//            }
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//            Date timeS = sdf.parse(timeStart);
+//            Date timeE= sdf.parse(timeEnd);
+//            Date timeR = sdf.parse(timeRow);
+//
+//            // compareTo
+//            int diffStart = timeS.compareTo(timeR);
+//            int diffEnd = timeE.compareTo(timeR);
+//
+//            if(diffStart <0 &&diffEnd >0) {
+//                return true;
+//            } else if(diffStart == 0 || diffEnd ==0) {
+//                return true;
+//            }else {
+//                return false;
+//            }
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//
+//        return false;
+//    }
 }

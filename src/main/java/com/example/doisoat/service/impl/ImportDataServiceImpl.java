@@ -1,7 +1,8 @@
-package com.example.doisoat.service;
+package com.example.doisoat.service.impl;
 
 import com.example.doisoat.model.ImportDataDetailEntity;
 import com.example.doisoat.model.ImportDataEntity;
+import com.example.doisoat.service.ImportSerivce;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -15,11 +16,11 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class ImportDataService implements ImportSerivceDAO {
+public class ImportDataServiceImpl implements ImportSerivce {
 
     private JdbcTemplate jdbcTemplate;
 
-    public ImportDataService(JdbcTemplate jdbcTemplate) {
+    public ImportDataServiceImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
