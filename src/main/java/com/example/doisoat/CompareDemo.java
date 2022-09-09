@@ -1,22 +1,52 @@
-package com.example.doisoat.demo;
+package com.example.doisoat;
 
 import com.example.doisoat.ReadDataAtomi;
 import com.example.doisoat.ReadImediaTxt;
+import com.example.doisoat.model.SessionEntity;
 import com.example.doisoat.model.TransEntity;
+import com.example.doisoat.service.SessionSerivce;
+import com.example.doisoat.service.impl.ImportDataServiceImpl;
+import com.example.doisoat.service.impl.SessionServiceImpl;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class CompareDemo {
+    @Autowired
+    SessionSerivce service;
     public static void main(String[] args) throws IOException, ParseException {
         ReadImediaTxt imedias = new ReadImediaTxt();
         ReadDataAtomi atomi = new ReadDataAtomi();
+        Timestamp ts = Timestamp.valueOf(LocalDateTime.now(ZoneId.of("UTC")));
+        try {
+            SessionEntity session = new SessionEntity();
+            //Create Session
+            session.setPeriodDate("Theo ngày");
+            session.setCreatedAt(ts);
+            session.setUpdatedAt(ts);
+            session.setStatus((byte) 1);
+            session.setSystemId1(2);
+            session.setSystemId2(3);
+            SessionSerivce service = new SessionServiceImpl();
+            int sessionId = service.create(session);
+
+            log.info("id session - {} ", sessionId);
+        }catch (Exception ex){
+            log.error("Message error - {}", ex.getMessage());
+        }
 
 
         final String link1 = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file25\\DownloadSoftpin20222608.tsv";
@@ -24,8 +54,6 @@ public class CompareDemo {
         String TimeS = "25/08/2022 00:00:00";
         String TimeE = "25/08/2022 23:59:59";
         Map<String, TransEntity> mapTransImedia = imedias.readImedia(TimeS,TimeE,link1,link2);
-
-
 
         //Get File Atomi
         String linkAtomi = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file25\\atmd_pg_20220826.tsv";
@@ -50,6 +78,8 @@ public class CompareDemo {
 
         System.out.println("Atomi tổng: "+mapTransImedia.size()+ " Atomi Lệch : " + uniqueListAtomi.size());
         BufferedWriter f_writer = new BufferedWriter(new FileWriter("C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file24\\doisoat.txt"));
+        f_writer.write("Atomi tổng: "+mapTransImedia.size()+ " Atomi Lệch : " + uniqueListAtomi.size());
+        f_writer.newLine();
         for (String key: uniqueListAtomi) {
             try {
                 if(mapTransAtomi.get(key).getTRANG_THAI().equals("EXT-0000")){
@@ -64,7 +94,6 @@ public class CompareDemo {
             }
 
         }
-        f_writer.close();
 
 
         //Check  Imedia- > Atomi
@@ -79,21 +108,20 @@ public class CompareDemo {
         }
 
 
-        System.out.println("Imedia tổng: "+mapTransImedia.size()+" Imedia Lệch : " + uniqueListImedia.size() + uniqueListImedia.toString());
-        BufferedWriter writerImedia = new BufferedWriter(new FileWriter("C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file24\\doiSoatImedia.txt"));
-
+        System.out.println("Imedia tổng: "+mapTransImedia.size()+" Imedia Lệch : " + uniqueListImedia.size() );
+        f_writer.write("Imedia tổng: "+mapTransImedia.size()+" Imedia Lệch : " + uniqueListImedia.size() );
+        f_writer.newLine();
         for (String key: uniqueListImedia) {
             System.out.println(mapTransImedia.get(key));
             try {
                 if(mapTransImedia.get(key).getTRANG_THAI().equals("Thanh Cong")){
-                    writerImedia.write( "**" + String.valueOf(mapTransImedia.get(key)+"=>Cần xem xét lại"));
-                    writerImedia.newLine();
+                    f_writer.write( "**" + String.valueOf(mapTransImedia.get(key)+"=>Cần xem xét lại"));
+                    f_writer.newLine();
                 }
             }catch (IOException e){
                 System.out.println(e);
             }
         }
-        writerImedia.close();
-
+        f_writer.close();
     }
 }

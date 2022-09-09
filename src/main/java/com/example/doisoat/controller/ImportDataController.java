@@ -3,7 +3,7 @@ package com.example.doisoat.controller;
 import com.example.doisoat.Order_Id_Random;
 import com.example.doisoat.model.ImportDataDetailEntity;
 import com.example.doisoat.model.ImportDataEntity;
-import com.example.doisoat.service.ImportDataService;
+import com.example.doisoat.service.impl.ImportDataServiceImpl;
 import com.example.doisoat.service.SessionSerivce;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ import java.util.List;
 public class ImportDataController {
 
     @Autowired
-    ImportDataService importDataService;
+    ImportDataServiceImpl importDataServiceImpl;
 
     @Autowired
     SessionSerivce sessionSerivce;
@@ -43,28 +43,28 @@ public class ImportDataController {
         importDataModel.setSystemCode(random.genOderId());
         importDataModel.setFileName("doi_soat_thang_8.xlsx");
         importDataModel.setTotalAmount(900000000L);
-        importDataModel.setNumberOfTotal(450548);
-        importDataModel.setNumberOfSuccess(450000);
-        importDataModel.setNumberOfFail(548);
-        importDataModel.setImportDate(ts);
-        importDataModel.setImportBy("Anh Duc");
+        importDataModel.setNumberOfTotal(450548); //tổng số bản ghi import
+        importDataModel.setNumberOfSuccess(450000);//tổng số bản ghi import thành công
+        importDataModel.setNumberOfFail(548);//tổng số bản ghi import thất bại
+        importDataModel.setImportDate(ts);//ngày import
+        importDataModel.setImportBy("Anh Duc");//người import
         importDataModel.setDescription("Noi dung");
         importDataModel.setOrderNo(0);
-        importDataModel.setPeriodDate("16-08-2022");
+        importDataModel.setPeriodDate("16-08-2022"); //import dữ liệu của ngày nào định dạng dd/mm/yyyy
         importDataModel.setActionCode("");
-        importDataModel.setStatus(1);
-        importDataModel.setPartnerSystemId(partnerId);
+        importDataModel.setStatus(1); //1: file hoạt động, 0: file đã bị hủy
+        importDataModel.setPartnerSystemId(2);
         importDataModel.setSessionId(83);
         importDataModel.setEvidenceFile("");
 
-        int idImportData =  importDataService.create(importDataModel);
+        int idImportData =  importDataServiceImpl.create(importDataModel);
         log.info("ID = {}",idImportData);
-        return  importDataService.getFindById(idImportData);
+        return  importDataServiceImpl.getFindById(idImportData);
     }
 
     @GetMapping("/")
     public List<ImportDataEntity> getAllImportData(){
-        return importDataService.getListImportData();
+        return importDataServiceImpl.getListImportData();
     }
 
     @GetMapping("/addDataDetail/{id}")
@@ -79,6 +79,6 @@ public class ImportDataController {
         data.setTransTime(ts);
         data.setTransId(String.valueOf(random.genOderId()));
         data.setImportId(id);
-        return importDataService.create(data);
+        return importDataServiceImpl.create(data);
     }
 }

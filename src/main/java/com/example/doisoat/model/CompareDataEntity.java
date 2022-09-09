@@ -32,7 +32,7 @@ public class CompareDataEntity {
     private String dataType;
     @Basic
     @Column(name = "sys1_trans_id")
-    private Integer sys1TransId;
+    private Long sys1TransId;
     @Basic
     @Column(name = "sys1_trans_time")
     private Timestamp sys1TransTime;
@@ -50,7 +50,7 @@ public class CompareDataEntity {
     private Integer sys1PartnerTransId;
     @Basic
     @Column(name = "sys2_trans_id")
-    private Integer sys2TransId;
+    private Long sys2TransId;
     @Basic
     @Column(name = "sys2_trans_time")
     private Timestamp sys2TransTime;
@@ -138,11 +138,11 @@ public class CompareDataEntity {
         this.dataType = dataType;
     }
 
-    public Integer getSys1TransId() {
+    public Long getSys1TransId() {
         return sys1TransId;
     }
 
-    public void setSys1TransId(Integer sys1TransId) {
+    public void setSys1TransId(Long sys1TransId) {
         this.sys1TransId = sys1TransId;
     }
 
@@ -186,11 +186,11 @@ public class CompareDataEntity {
         this.sys1PartnerTransId = sys1PartnerTransId;
     }
 
-    public Integer getSys2TransId() {
+    public Long getSys2TransId() {
         return sys2TransId;
     }
 
-    public void setSys2TransId(Integer sys2TransId) {
+    public void setSys2TransId(Long sys2TransId) {
         this.sys2TransId = sys2TransId;
     }
 

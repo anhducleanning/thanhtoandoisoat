@@ -6,7 +6,7 @@ import com.example.doisoat.model.ImportDataEntity;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface ImportSerivceDAO {
+public interface ImportSerivce {
 
 
     List<ImportDataEntity> getListImportData();
