@@ -31,22 +31,6 @@ public class CompareDemo {
         ReadImediaTxt imedias = new ReadImediaTxt();
         ReadDataAtomi atomi = new ReadDataAtomi();
         Timestamp ts = Timestamp.valueOf(LocalDateTime.now(ZoneId.of("UTC")));
-        try {
-            SessionEntity session = new SessionEntity();
-            //Create Session
-            session.setPeriodDate("Theo ngày");
-            session.setCreatedAt(ts);
-            session.setUpdatedAt(ts);
-            session.setStatus((byte) 1);
-            session.setSystemId1(2);
-            session.setSystemId2(3);
-            SessionSerivce service = new SessionServiceImpl();
-            int sessionId = service.create(session);
-
-            log.info("id session - {} ", sessionId);
-        }catch (Exception ex){
-            log.error("Message error - {}", ex.getMessage());
-        }
 
 
         final String link1 = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file25\\DownloadSoftpin20222608.tsv";

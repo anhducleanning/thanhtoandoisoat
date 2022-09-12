@@ -6,14 +6,17 @@ public class TransEntity {
     private String DATETIME_LOG;
     private String TRANG_THAI;
 
-    public TransEntity(String ID, String TRANS_ID, String DATETIME_LOG, String TRANG_THAI) {
+    private String AMOUNT;
+
+    private String SERVICE_CODE;
+
+    public TransEntity(String ID, String TRANS_ID, String DATETIME_LOG, String TRANG_THAI, String AMOUNT, String SERVICE_CODE) {
         this.ID = ID;
         this.TRANS_ID = TRANS_ID;
         this.DATETIME_LOG = DATETIME_LOG;
         this.TRANG_THAI = TRANG_THAI;
-    }
-
-    public TransEntity() {
+        this.AMOUNT = AMOUNT;
+        this.SERVICE_CODE = SERVICE_CODE;
     }
 
     public String getID() {
@@ -48,6 +51,22 @@ public class TransEntity {
         this.TRANG_THAI = TRANG_THAI;
     }
 
+    public String getAMOUNT() {
+        return AMOUNT;
+    }
+
+    public void setAMOUNT(String AMOUNT) {
+        this.AMOUNT = AMOUNT;
+    }
+
+    public String getSERVICE_CODE() {
+        return SERVICE_CODE;
+    }
+
+    public void setSERVICE_CODE(String SERVICE_CODE) {
+        this.SERVICE_CODE = SERVICE_CODE;
+    }
+
     @Override
     public String toString() {
         return "TransEntity{" +
@@ -55,6 +74,8 @@ public class TransEntity {
                 ", TRANS_ID='" + TRANS_ID + '\'' +
                 ", DATETIME_LOG='" + DATETIME_LOG + '\'' +
                 ", TRANG_THAI='" + TRANG_THAI + '\'' +
+                ", AMOUNT='" + AMOUNT + '\'' +
+                ", SERVICE_CODE='" + SERVICE_CODE + '\'' +
                 '}';
     }
 }

@@ -1,5 +1,7 @@
 package com.example.doisoat.model;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -37,6 +39,7 @@ public class ImportDataEntity {
     private Integer numberOfFail;
     @Basic
     @Column(name = "import_date")
+    @CreationTimestamp
     private Timestamp importDate;
     @Basic
     @Column(name = "import_by")
