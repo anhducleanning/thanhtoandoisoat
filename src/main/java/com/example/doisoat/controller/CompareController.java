@@ -2,10 +2,11 @@ package com.example.doisoat.controller;
 
 import com.example.doisoat.ReadDataAtomi;
 import com.example.doisoat.ReadImediaTxt;
-import com.example.doisoat.model.CompareDataEntity;
-import com.example.doisoat.model.SessionEntity;
-import com.example.doisoat.model.TransEntity;
+import com.example.doisoat.model.*;
+import com.example.doisoat.reponsitory.ImportDataDetailRepository;
 import com.example.doisoat.service.CompareDataSerivce;
+import com.example.doisoat.service.ImportDataDetailService;
+import com.example.doisoat.service.ImportDataSerivce;
 import com.example.doisoat.service.SessionSerivce;
 import com.example.doisoat.service.impl.SessionServiceImpl;
 import com.example.doisoat.until.GlobalConfig;
@@ -35,23 +36,28 @@ public class CompareController {
     @Autowired
     CompareDataSerivce compareDataSerivce;
 
+    @Autowired
+    ImportDataSerivce importDataSerivce;
+
+    @Autowired
+    ImportDataDetailService detailService;
 
    @GetMapping("/compare")
     public void compare() throws IOException {
        ReadImediaTxt imedias = new ReadImediaTxt();
        ReadDataAtomi atomi = new ReadDataAtomi();
        int sessionId = 0;
+       int idImport =0;
        Timestamp ts = Timestamp.valueOf(LocalDateTime.now(ZoneId.of("UTC")));
        try {
            SessionEntity session = new SessionEntity();
            //Create Session
            session.setPeriodDate("Theo ngày");
-           session.setCreatedAt(ts);
-           session.setUpdatedAt(ts);
            session.setStatus((byte) 1);
            session.setSystemId1(GlobalConfig.SYS1_ATOMI);
            session.setSystemId2(GlobalConfig.SYS1_IMEDIA);
-            sessionId = sessionSerivce.create(session);
+           sessionSerivce.create(session);
+           sessionId = session.getId();
            log.info("id session - {} ", sessionId);
        }catch (Exception ex){
            log.error("Message error - {}", ex.getMessage());
@@ -70,6 +76,38 @@ public class CompareController {
        String timeE = "2022-08-25 23:59:59";
        Map<String,TransEntity> mapTransAtomi =  atomi.readFileAtomi(timeS,timeE,linkAtomi);
 
+        try {
+            //Create ImportData
+            ImportDataEntity data = new ImportDataEntity();
+            Date date = new Date(System.currentTimeMillis());
+            data.setImportType(GlobalConfig.FILE);
+            data.setImportCode("CODE"+Math.random());
+            data.setSystemCode("SYSTEMCODE"+Math.random());
+            data.setNumberOfTotal(mapTransAtomi.size());
+            data.setNumberOfSuccess(0000000000);
+            data.setNumberOfFail(1);
+            data.setImportBy("Anh Duc");
+            data.setPeriodDate(String.valueOf(date));
+            data.setStatus(GlobalConfig.FILE_WORK);
+            data.setPartnerSystemId(GlobalConfig.PARTNER_ATOMI);
+            data.setSessionId(sessionId);
+            data.setEvidenceFile("File chứng cớ có thể mã hoá");
+            importDataSerivce.createImportData(data);
+            log.info("id ImportData - {} ", data.getImportId());
+            idImport = data.getImportId();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+        //Save Import Data detail
+//        List<ImportDataDetailEntity> listDataImedia = saveInListData((HashMap<String, TransEntity>) mapTransImedia,idImport);
+//        detailService.create(listDataImedia);
+
+//       List<ImportDataDetailEntity> listDataAtomi = saveInListData((HashMap<String, TransEntity>) mapTransAtomi,idImport);
+//       detailService.create(listDataAtomi);
+
+
 
        System.out.println("-----------Compare-----------------");
        //Check Atomi - > Imedia
@@ -84,9 +122,9 @@ public class CompareController {
            }
        }
 
-       System.out.println("Atomi tổng: "+mapTransImedia.size()+ " Atomi Lệch : " + uniqueListAtomi.size());
+       System.out.println("Atomi tổng: "+mapTransAtomi.size()+ " Atomi Lệch : " + uniqueListAtomi.size());
        BufferedWriter f_writer = new BufferedWriter(new FileWriter("C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file24\\doisoat.txt"));
-       f_writer.write("Atomi tổng: "+mapTransImedia.size()+ " Atomi Lệch : " + uniqueListAtomi.size());
+       f_writer.write("Atomi tổng: "+mapTransAtomi.size()+ " Atomi Lệch : " + uniqueListAtomi.size());
        f_writer.newLine();
 
 
@@ -137,7 +175,7 @@ public class CompareController {
        f_writer.close();
    }
 
-   @GetMapping("/test")
+
     public void compareDataAtomi (TransEntity transEntity, int idSesion){
        Date date = new Date(System.currentTimeMillis());
        CompareDataEntity compareData = new CompareDataEntity();
@@ -148,10 +186,8 @@ public class CompareController {
        compareData.setSys1TransTime(Timestamp.valueOf(transEntity.getDATETIME_LOG()));
        compareData.setSys1TransType(transEntity.getTRANG_THAI());
        int id = compareDataSerivce.saveCompareDataAtomi(compareData,idSesion);
-       System.out.println(id);
    }
 
-    @GetMapping("/test1")
     public void compareDataImedia (TransEntity transEntity, int idSesion){
         Date date = new Date(System.currentTimeMillis());
         CompareDataEntity compareData = new CompareDataEntity();
@@ -162,6 +198,33 @@ public class CompareController {
         compareData.setSys2TransTime(Timestamp.valueOf(Until.convertTimeImedia( GlobalConfig.DATE_FORMAT_IMEDIA,GlobalConfig.DATE_FORMAT_ATOMI,transEntity.getDATETIME_LOG())));
         compareData.setSys2TransStatus(transEntity.getTRANG_THAI());
         int id = compareDataSerivce.saveCompareDataImedia(compareData,idSesion);
-        System.out.println(id);
+    }
+
+
+
+
+    public List<ImportDataDetailEntity> saveInListData(HashMap<String, TransEntity> trans, int idImport){
+        try {
+            //ImportDataDetaild
+            ImportDataDetailEntity dataDetail = new ImportDataDetailEntity();
+            List<ImportDataDetailEntity> list = new ArrayList<>();
+            for (String keyAtm : trans.keySet()) {
+                dataDetail.setImportDetailId(Long.valueOf(trans.get(keyAtm).getTRANS_ID()));
+                dataDetail.setImportCode("IMPORTCODE"+Math.random());
+                dataDetail.setRefId(trans.get(keyAtm).getTRANS_ID());
+                dataDetail.setAmount(Integer.valueOf(trans.get(keyAtm).getAMOUNT().replaceAll(",","")));
+                dataDetail.setTransName(trans.get(keyAtm).getSERVICE_CODE());
+                dataDetail.setTransStatus(trans.get(keyAtm).getTRANG_THAI());
+                dataDetail.setTransTime(trans.get(keyAtm).getDATETIME_LOG());
+                dataDetail.setTransType("D");
+                dataDetail.setImportId(idImport);
+                list.add(dataDetail);
+
+            }
+            return list;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

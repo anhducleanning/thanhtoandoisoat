@@ -31,7 +31,7 @@ public class ImportDataDetailEntity {
     private String transStatus;
     @Basic
     @Column(name = "trans_time")
-    private Timestamp transTime;
+    private String transTime;
     @Basic
     @Column(name = "trans_id")
     private String transId;
@@ -95,11 +95,11 @@ public class ImportDataDetailEntity {
         this.transStatus = transStatus;
     }
 
-    public Timestamp getTransTime() {
+    public String getTransTime() {
         return transTime;
     }
 
-    public void setTransTime(Timestamp transTime) {
+    public void setTransTime(String transTime) {
         this.transTime = transTime;
     }
 

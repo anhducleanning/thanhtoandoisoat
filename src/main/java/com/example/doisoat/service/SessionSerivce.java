@@ -8,16 +8,6 @@ import java.util.List;
 
 public interface SessionSerivce {
 
-
-    List<SessionEntity> getAllSessions();
-    Integer create(SessionEntity sessionModel) throws SQLException;
-
-    List<PartnerSystemEntity> getPartnerSystem();
-
-    Integer getPartnerId(String codePartner);
-
-    SessionEntity getSessionById(int id);
-
-    void createTest(SessionEntity session);
+    void create(SessionEntity session);
 
 }

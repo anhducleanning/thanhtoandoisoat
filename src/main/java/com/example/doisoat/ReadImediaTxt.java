@@ -21,9 +21,10 @@ public class ReadImediaTxt {
 
 
         Map<String, TransEntity> map = readImedia(timeS, timeE,link1,link2);;
-        boolean b = map.get("1").getDATETIME_LOG() instanceof String;
-        System.out.println( map.get("1").getDATETIME_LOG() instanceof String);
-        System.out.println(map.size());
+        Set<String> set = map.keySet();
+        for (String key : set) {
+            System.out.println(key + " " + map.get(key));
+        };
 
 
     }
@@ -35,11 +36,12 @@ public class ReadImediaTxt {
         link.add(path);
 
         for (int i = 0; i <=1 ; i++) {
+            String serviceCode = i==1?"topup":"buycard";
             try (BufferedReader br = Files.newBufferedReader(Paths.get(link.get(i)))) {
                 List<String> lists = br.lines().skip(7).collect(Collectors.toList());
                 for (String list : lists) {
                     String[] split = list.split("\t");
-                    TransEntity atomiTrans = new TransEntity(split[0], split(split[5]), split[1], split[7]);
+                    TransEntity atomiTrans = new TransEntity(split[0], split(split[5]), split[1], split[7],split[3],serviceCode);
                     if (CompareBetweenDateTime(timeS, timeE, atomiTrans.getDATETIME_LOG())) {
                         map.put(split(split[5]), atomiTrans);
                     }
@@ -52,24 +54,24 @@ public class ReadImediaTxt {
         return map;
     }
 
-    public static Map<String, TransEntity> readFileImedia(String timeS, String timeE, String pathFile) {
-        Map<String, TransEntity> map = new HashMap<>();
-        try (BufferedReader br = Files.newBufferedReader(Paths.get(pathFile))) {
-            List<String> lists = br.lines().skip(7).collect(Collectors.toList());
-            for (String list : lists) {
-                String[] split = list.split("\t");
-                TransEntity atomiTrans = new TransEntity(split[0], split(split[5]), split[1], split[7]);
-                if (CompareBetweenDateTime(timeS, timeE, atomiTrans.getDATETIME_LOG())) {
-
-                    map.put(split(split[5]), atomiTrans);
-                }
-            }
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
-        }
-
-        return map;
-    }
+//    public static Map<String, TransEntity> readFileImedia(String timeS, String timeE, String pathFile) {
+//        Map<String, TransEntity> map = new HashMap<>();
+//        try (BufferedReader br = Files.newBufferedReader(Paths.get(pathFile))) {
+//            List<String> lists = br.lines().skip(7).collect(Collectors.toList());
+//            for (String list : lists) {
+//                String[] split = list.split("\t");
+//                TransEntity atomiTrans = new TransEntity(split[0], split(split[5]), split[1], split[7]);
+//                if (CompareBetweenDateTime(timeS, timeE, atomiTrans.getDATETIME_LOG())) {
+//
+//                    map.put(split(split[5]), atomiTrans);
+//                }
+//            }
+//        } catch (IOException | ParseException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return map;
+//    }
 
     public static boolean CompareBetweenDateTime(String timeStart, String timeEnd, String timeRow) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");

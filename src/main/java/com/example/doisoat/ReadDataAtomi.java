@@ -26,9 +26,12 @@ public class ReadDataAtomi {
 
 
         Map<String,TransEntity> maps = readFileAtomi(timeS,timeE,link);
-        System.out.println(maps.get("1111111111111111").getTRANG_THAI());
+//        System.out.println(maps.get("1111111111111111").getTRANG_THAI());
 
-
+        Set<String> set = maps.keySet();
+        for (String key : set) {
+            System.out.println(key + " " + maps.get(key));
+        }
     }
 
 
@@ -38,7 +41,7 @@ public class ReadDataAtomi {
             List<String>  lists = br.lines().skip(1).collect(Collectors.toList());
             for (String list: lists) {
                 String[] split = list.split("\t");
-                TransEntity atomiTrans = new TransEntity(split[0],split[1],split[3],split[2]);
+                TransEntity atomiTrans = new TransEntity(split[0],split[1],split[3],split[2],split[8],split[6]);
                 if(Until.CompareBetweenDateTime(timeS,timeE,atomiTrans.getDATETIME_LOG(),GlobalConfig.DATE_FORMAT_ATOMI)){
                     map.put(split[1], atomiTrans);
                 }

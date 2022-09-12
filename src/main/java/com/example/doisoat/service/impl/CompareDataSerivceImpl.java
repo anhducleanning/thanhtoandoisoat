@@ -49,7 +49,7 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
 
         if(insert == 1){
             id = generatedKeyHolder.getKey().intValue();
-            log.info("id={}", id);
+//            log.info("id={}", id);
         }
         return id;
 
@@ -84,7 +84,6 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
 
         if(insert == 1){
             id = generatedKeyHolder.getKey().intValue();
-            log.info("id={}", id);
         }
         return id;
     }
