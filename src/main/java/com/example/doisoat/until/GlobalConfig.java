@@ -21,4 +21,8 @@ public class GlobalConfig {
     public static final int PARTNER_ATOMI = 2;
     public static final int PARTNER_IMEDIA =3;
 
+    public static final String STATUS_SUCCES_ATOMI = "EXT-0000";
+
+    public static final String STATUS_SUCCES_IMEDIA = "Thanh Cong";
+
 }
