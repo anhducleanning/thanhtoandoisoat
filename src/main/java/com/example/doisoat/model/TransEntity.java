@@ -6,11 +6,11 @@ public class TransEntity {
     private String DATETIME_LOG;
     private String TRANG_THAI;
 
-    private String AMOUNT;
+    private int AMOUNT;
 
     private String SERVICE_CODE;
 
-    public TransEntity(String ID, String TRANS_ID, String DATETIME_LOG, String TRANG_THAI, String AMOUNT, String SERVICE_CODE) {
+    public TransEntity(String ID, String TRANS_ID, String DATETIME_LOG, String TRANG_THAI, int AMOUNT, String SERVICE_CODE) {
         this.ID = ID;
         this.TRANS_ID = TRANS_ID;
         this.DATETIME_LOG = DATETIME_LOG;
@@ -51,11 +51,11 @@ public class TransEntity {
         this.TRANG_THAI = TRANG_THAI;
     }
 
-    public String getAMOUNT() {
+    public int getAMOUNT() {
         return AMOUNT;
     }
 
-    public void setAMOUNT(String AMOUNT) {
+    public void setAMOUNT(int AMOUNT) {
         this.AMOUNT = AMOUNT;
     }
 

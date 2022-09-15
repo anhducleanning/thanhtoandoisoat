@@ -1,19 +1,15 @@
 package com.example.doisoat;
 
-import com.example.doisoat.model.AtomiEntity;
+import com.example.doisoat.common.until.Constant;
 import com.example.doisoat.model.TransEntity;
-import com.example.doisoat.until.GlobalConfig;
-import com.example.doisoat.until.Until;
+import com.example.doisoat.common.until.GlobalConfig;
+import com.example.doisoat.common.until.Util;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,8 +37,8 @@ public class ReadDataAtomi {
             List<String>  lists = br.lines().skip(1).collect(Collectors.toList());
             for (String list: lists) {
                 String[] split = list.split("\t");
-                TransEntity atomiTrans = new TransEntity(split[0],split[1],split[3],split[2],split[8],split[6]);
-                if(Until.CompareBetweenDateTime(timeS,timeE,atomiTrans.getDATETIME_LOG(),GlobalConfig.DATE_FORMAT_ATOMI)){
+                TransEntity atomiTrans = new TransEntity(split[0],split[1],split[3],split[2],Integer.valueOf(split[8]),split[6]);
+                if(Util.CompareBetweenDateTime(timeS,timeE,atomiTrans.getDATETIME_LOG(), Constant.FomartDate.DATE_FORMAT_ATOMI)){
                     map.put(split[1], atomiTrans);
                 }
 

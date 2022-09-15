@@ -1,27 +1,25 @@
 package com.example.doisoat.demo;
 
-import com.example.doisoat.model.TransEntity;
-
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Test2 {
 
-
+    public static Long a = 0l;
     public static void main(String[] args) {
-        int cout = 0;
-        for (int i = 0; i < 10; i++) {
-            cout += i;
+        List<Long> list = new ArrayList<>();
+       Long b =  getLong(list, a);
+        System.out.println(list.size());
+        System.out.println(b);
+    }
+        public static List<Long> listLong(Long a){
+            List<Long> list= new ArrayList<>();
+                list.add(3L);
+                a = 3L;
+                return list;
         }
-        System.out.println(cout);
+    public static Long getLong( List<Long> list,Long a){
+        list.add(3L);
+       return a+1;
     }
 
 }
