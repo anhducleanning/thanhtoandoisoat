@@ -2,11 +2,12 @@ package com.example.doisoat.service.impl;
 
 import com.example.doisoat.ReadDataAtomi;
 import com.example.doisoat.ReadImediaTxt;
+import com.example.doisoat.common.until.Constant;
 import com.example.doisoat.model.*;
 import com.example.doisoat.reponsitory.CompareResponsitory;
 import com.example.doisoat.service.*;
-import com.example.doisoat.until.GlobalConfig;
-import com.example.doisoat.until.Util;
+import com.example.doisoat.common.until.GlobalConfig;
+import com.example.doisoat.common.until.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,9 +44,11 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
     CompareDataSummarySerivce dataSummarySerivce;
 
 
+
+
     @Override
     @Transactional
-    public void compare() throws IOException {
+    public List<TransEntity> compare() throws IOException {
         ReadImediaTxt imedias = new ReadImediaTxt();
         ReadDataAtomi atomi = new ReadDataAtomi();
         int sessionId = 0;
@@ -113,23 +116,11 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
 //        detailService.create((HashMap<String, TransEntity>) mapTransAtomi,idImport);
 
 
-
         System.out.println("-----------Compare-----------------");
         //Check Atomi - > Imedia
         List<String> uniqueListAtomi = new ArrayList<>();
-        int  countAtomi = 0;
-        uniqueListAtomi = compareAndAdd(mapTransAtomi,mapTransImedia,countAtomi,GlobalConfig.STATUS_SUCCES_ATOMI);
-//        for (String keyAtomi :  mapTransAtomi.keySet()) {
-//            countAtomi+= mapTransAtomi.get(keyAtomi).getAMOUNT();
-//            if (mapTransImedia.keySet().contains(keyAtomi)) {
-//                continue;
-//            } else if(mapTransAtomi.get(keyAtomi).getTRANG_THAI().equals("EXT-0000")) {
-//                uniqueListAtomi.add(keyAtomi);
-//            }else {
-//                uniqueListAtomi.add(keyAtomi);
-//            }
-//        }
 
+        int countAtomi = compareAndAdd(mapTransAtomi,mapTransImedia,uniqueListAtomi,Constant.Status.STATUS_SUCCES_ATOMI);
 
 
         System.out.println("Tổng tiền Atomi: "  + countAtomi);
@@ -144,28 +135,15 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
 
         //Check  Imedia- > Atomi
         List<String> uniqueListImedia = new ArrayList<>();
-        int  countImedia = 0;
-        uniqueListImedia = compareAndAdd(mapTransImedia,mapTransAtomi,countImedia, GlobalConfig.STATUS_SUCCES_IMEDIA);
-
-
-//        for (String keyImedia :  mapTransImedia.keySet()) {
-//            countImedia += mapTransImedia.get(keyImedia).getAMOUNT();
-//            if (mapTransAtomi.keySet().contains(keyImedia)) {
-//                continue;
-//            } else if(mapTransImedia.get(keyImedia).getTRANG_THAI().equals("Thanh Cong")){
-//                uniqueListImedia.add(keyImedia);
-//            }
-//        }
-
+        int countImedia = compareAndAdd(mapTransImedia,mapTransAtomi,uniqueListImedia, Constant.Status.STATUS_SUCCES_IMEDIA);
 
 
         System.out.println("Tổng tiền Imedia: " + countImedia);
-
-
         System.out.println("Imedia tổng: "+totalImedia+" Imedia Lệch : " + uniqueListImedia.size() );
         f_writer.write("Imedia tổng: "+totalImedia+" Imedia Lệch : " + uniqueListImedia.size() );
         f_writer.newLine();
 
+        //Writer file and add db after compare imedia
         writeFileImedia(uniqueListImedia,f_writer,mapTransImedia,sessionId);
         f_writer.close();
 
@@ -187,11 +165,12 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
-
+        List<TransEntity> list = new ArrayList<>();
+        return list ;
     }
 
-    public List<String> compareAndAdd(Map<String,TransEntity> partner1,Map<String,TransEntity> partner2, int countAtomi,String status){
-        List<String> uniqueList = new ArrayList<>();
+    public Integer compareAndAdd(Map<String,TransEntity> partner1, Map<String,TransEntity> partner2,  List<String> uniqueList, String status){
+        int countAtomi = 0;
         for (String keyAtomi :  partner1.keySet()) {
             countAtomi+= partner1.get(keyAtomi).getAMOUNT();
             if (partner2.keySet().contains(keyAtomi)) {
@@ -202,7 +181,7 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
                 uniqueList.add(keyAtomi);
             }
         }
-        return uniqueList;
+        return countAtomi;
     }
 
 
@@ -227,12 +206,12 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
 
     public void writeFileImedia(List<String> uniqueListImedia,BufferedWriter f_writer,Map<String,TransEntity> mapTransImedia, int sessionId){
         for (String key: uniqueListImedia) {
-            System.out.println(mapTransImedia.get(key));
             try {
                 if(mapTransImedia.get(key).getTRANG_THAI().equals("Thanh Cong")){
                     saveCompareDataImedia(mapTransImedia.get(key),sessionId);
                     f_writer.write( "**" + String.valueOf(mapTransImedia.get(key)+"=>Cần xem xét lại"));
                     f_writer.newLine();
+                    System.out.println(mapTransImedia.get(key));
                 }
             }catch (IOException e){
                 System.out.println(e);
@@ -262,7 +241,7 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
         compareData.setSys1Id(GlobalConfig.SYS1_ATOMI);
         compareData.setSys2Id(GlobalConfig.SYS1_IMEDIA);
         compareData.setSys2TransId(Long.valueOf(transEntity.getTRANS_ID()));
-        compareData.setSys2TransTime(Timestamp.valueOf(Util.convertTimeImedia( GlobalConfig.DATE_FORMAT_IMEDIA,GlobalConfig.DATE_FORMAT_ATOMI,transEntity.getDATETIME_LOG())));
+        compareData.setSys2TransTime(Timestamp.valueOf(Util.convertTimeImedia( Constant.FomartDate.DATE_FORMAT_IMEDIA,Constant.FomartDate.DATE_FORMAT_ATOMI,transEntity.getDATETIME_LOG())));
         compareData.setSys2TransStatus(transEntity.getTRANG_THAI());
         compareData.setSessionId(idSession);
         compareResponsitory.save(compareData);

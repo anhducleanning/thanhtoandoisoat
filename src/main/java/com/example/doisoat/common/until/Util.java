@@ -1,4 +1,4 @@
-package com.example.doisoat.until;
+package com.example.doisoat.common.until;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

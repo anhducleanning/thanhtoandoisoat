@@ -1,7 +1,7 @@
 package com.example.doisoat;
 
 import com.example.doisoat.model.TransEntity;
-import com.example.doisoat.until.Util;
+import com.example.doisoat.common.until.Util;
 
 import java.io.BufferedReader;
 import java.io.IOException;

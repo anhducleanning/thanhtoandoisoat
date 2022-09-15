@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface CompareDataSerivce {
 
-    void compare() throws IOException;
+    List<TransEntity> compare() throws IOException;
     void saveCompareDataAtomi(TransEntity transEntity, int idSession);
     void saveCompareDataImedia(TransEntity transEntity, int idSession);
 

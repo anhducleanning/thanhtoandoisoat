@@ -1,8 +1,9 @@
 package com.example.doisoat;
 
+import com.example.doisoat.common.until.Constant;
 import com.example.doisoat.model.TransEntity;
-import com.example.doisoat.until.GlobalConfig;
-import com.example.doisoat.until.Util;
+import com.example.doisoat.common.until.GlobalConfig;
+import com.example.doisoat.common.until.Util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class ReadDataAtomi {
             for (String list: lists) {
                 String[] split = list.split("\t");
                 TransEntity atomiTrans = new TransEntity(split[0],split[1],split[3],split[2],Integer.valueOf(split[8]),split[6]);
-                if(Util.CompareBetweenDateTime(timeS,timeE,atomiTrans.getDATETIME_LOG(),GlobalConfig.DATE_FORMAT_ATOMI)){
+                if(Util.CompareBetweenDateTime(timeS,timeE,atomiTrans.getDATETIME_LOG(), Constant.FomartDate.DATE_FORMAT_ATOMI)){
                     map.put(split[1], atomiTrans);
                 }
 
