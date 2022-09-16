@@ -3,19 +3,31 @@ package com.example.doisoat.service.impl;
 import com.example.doisoat.ReadDataAtomi;
 import com.example.doisoat.ReadImediaTxt;
 import com.example.doisoat.common.until.Constant;
+import com.example.doisoat.demo.dowloadupload.FileUploadResponse;
+import com.example.doisoat.demo.dowloadupload.FileUploadUtil;
+import com.example.doisoat.dto.LinkFilePartern;
+import com.example.doisoat.dto.RequestEntity;
 import com.example.doisoat.model.*;
 import com.example.doisoat.reponsitory.CompareResponsitory;
 import com.example.doisoat.service.*;
 import com.example.doisoat.common.until.GlobalConfig;
 import com.example.doisoat.common.until.Util;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -48,18 +60,22 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
 
     @Override
     @Transactional
-    public List<TransEntity> compare() throws IOException {
+    public List<TransEntity> compare(
+            MultipartFile fileAtomi,
+            MultipartFile fileImedia1,
+            MultipartFile fileImedia2
+    ) throws IOException {
         ReadImediaTxt imedias = new ReadImediaTxt();
         ReadDataAtomi atomi = new ReadDataAtomi();
         int sessionId = 0;
         int idImport =0;
         int totalAtomi = 0;
         int totalImedia = 0;
-        Timestamp ts = Timestamp.valueOf(LocalDateTime.now(ZoneId.of("UTC")));
+        List<TransEntity> reponse = new ArrayList<>();
         try {
             SessionEntity session = new SessionEntity();
             //Create Session
-            session.setPeriodDate("Theo ngày");
+            session.setPeriodDate("Theo Ngày");
             session.setStatus((byte) 1);
             session.setSystemId1(GlobalConfig.SYS1_ATOMI);
             session.setSystemId2(GlobalConfig.SYS1_IMEDIA);
@@ -72,15 +88,25 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
         }
 
 
-        final String link1 = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file25\\DownloadSoftpin20222608.tsv";
-        final String link2 = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file25\\Direct-Topup20222608.tsv";
+//        final String link1 = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file25\\DownloadSoftpin20222608.tsv";
+//        final String link2 = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file25\\Direct-Topup20222608.tsv";
+
+
+        LinkFilePartern linkFile = linkFileUpload(fileAtomi,fileImedia1,fileImedia2);
+
+
+        final String link1 = linkFile.getFileImedia1();
+        final String link2 = linkFile.getFileImedia2();
+
+
         String TimeS = "25/08/2022 00:00:00";
         String TimeE = "25/08/2022 23:59:59";
         Map<String, TransEntity> mapTransImedia = imedias.readImedia(TimeS,TimeE,link1,link2);//api=>
         totalImedia = mapTransImedia.size();
 
         //Get File Atomi
-        String linkAtomi = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file25\\atmd_pg_20220826.tsv";
+//        String linkAtomi = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file25\\atmd_pg_20220826.tsv";
+        String linkAtomi = linkFile.getFileAtomi();
         String timeS = "2022-08-25 00:00:00";
         String timeE = "2022-08-25 23:59:59";
         Map<String,TransEntity> mapTransAtomi =  atomi.readFileAtomi(timeS,timeE,linkAtomi);
@@ -119,8 +145,8 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
         System.out.println("-----------Compare-----------------");
         //Check Atomi - > Imedia
         List<String> uniqueListAtomi = new ArrayList<>();
+        int countAtomi = compareAndAdd(mapTransAtomi,mapTransImedia,uniqueListAtomi,reponse,Constant.Status.STATUS_SUCCES_ATOMI);
 
-        int countAtomi = compareAndAdd(mapTransAtomi,mapTransImedia,uniqueListAtomi,Constant.Status.STATUS_SUCCES_ATOMI);
 
 
         System.out.println("Tổng tiền Atomi: "  + countAtomi);
@@ -135,7 +161,7 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
 
         //Check  Imedia- > Atomi
         List<String> uniqueListImedia = new ArrayList<>();
-        int countImedia = compareAndAdd(mapTransImedia,mapTransAtomi,uniqueListImedia, Constant.Status.STATUS_SUCCES_IMEDIA);
+        int countImedia = compareAndAdd(mapTransImedia,mapTransAtomi,uniqueListImedia,reponse, Constant.Status.STATUS_SUCCES_IMEDIA);
 
 
         System.out.println("Tổng tiền Imedia: " + countImedia);
@@ -151,7 +177,6 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
         try {
             CompareDataSummaryEntity entity = new CompareDataSummaryEntity();
             Date date = new Date(System.currentTimeMillis());
-            String meomeo= "123sadas";
             entity.setCompareDate(date);
             entity.setSys1Records(totalAtomi);
             entity.setSys2Records(totalImedia);
@@ -165,17 +190,18 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
-        List<TransEntity> list = new ArrayList<>();
-        return list ;
+
+        return reponse ;
     }
 
-    public Integer compareAndAdd(Map<String,TransEntity> partner1, Map<String,TransEntity> partner2,  List<String> uniqueList, String status){
+    public Integer compareAndAdd(Map<String,TransEntity> partner1, Map<String,TransEntity> partner2,  List<String> uniqueList, List<TransEntity> reponse, String status){
         int count = 0;
         for (String key :  partner1.keySet()) {
             count+= partner1.get(key).getAMOUNT();
             if (partner2.keySet().contains(key)) {
                 continue;
             } else if(partner1.get(key).getTRANG_THAI().equals(status)) {
+                reponse.add(partner1.get(key));
                 uniqueList.add(key);
             }else {
                 uniqueList.add(key);
@@ -247,4 +273,40 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
         compareResponsitory.save(compareData);
     }
 
+    public LinkFilePartern linkFileUpload(MultipartFile fileAtomi,MultipartFile fileImedia1,MultipartFile fileImedia2) throws IOException {
+        //Get name file
+        String fileNameAtomi = StringUtils.cleanPath(fileAtomi.getOriginalFilename());
+        String fileNameImedia1 = StringUtils.cleanPath(fileImedia1.getOriginalFilename());
+        String fileNameImedia2 = StringUtils.cleanPath(fileImedia2.getOriginalFilename());
+
+        //Save File
+        saveFile(fileNameAtomi, fileAtomi);
+        saveFile(fileNameImedia1, fileImedia1);
+        saveFile(fileNameImedia2, fileImedia2);
+        String linkFileAtomi = "Files-Upload/"+ fileNameAtomi;
+        String linkFileImedia1 = "Files-Upload/"+ fileNameImedia1;
+        String linkFileImedia2 = "Files-Upload/"+ fileNameImedia2;
+
+        LinkFilePartern link = new LinkFilePartern(linkFileAtomi,linkFileImedia1,linkFileImedia2);
+        return link;
+    }
+    public  void saveFile(String fileName, MultipartFile multipartFile)
+            throws IOException {
+        Path uploadPath = Paths.get("Files-Upload");
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        String fileCode = RandomStringUtils.randomAlphanumeric(8);
+
+        try (InputStream inputStream = multipartFile.getInputStream()) {
+            Path filePath = uploadPath.resolve(fileName);
+            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException ioe) {
+            throw new IOException("Could not save file: " + fileName, ioe);
+        }
+
+
+    }
 }

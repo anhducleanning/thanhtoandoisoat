@@ -15,13 +15,17 @@ public class FileUploadController {
 
     @PostMapping("/uploadFile")
     public ResponseEntity<FileUploadResponse> uploadFile(
-            @RequestParam("file") MultipartFile multipartFile)
+            @RequestParam("fileAtomi") MultipartFile fileAtomi,
+            @RequestParam("fileImedia1") MultipartFile fileImedia1 ,
+            @RequestParam("fileImedia2") MultipartFile fileImedia2)
             throws IOException {
 
-        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-        long size = multipartFile.getSize();
+        String fileName = StringUtils.cleanPath(fileAtomi.getOriginalFilename());
+        String fileName1 = StringUtils.cleanPath(fileImedia1.getOriginalFilename());
+        String fileName2 = StringUtils.cleanPath(fileImedia2.getOriginalFilename());
+        long size = fileAtomi.getSize();
 
-        String filecode = FileUploadUtil.saveFile(fileName, multipartFile);
+        String filecode = FileUploadUtil.saveFile(fileName, fileAtomi);
         System.out.println(filecode);
         FileUploadResponse response = new FileUploadResponse();
         response.setFileName(fileName);

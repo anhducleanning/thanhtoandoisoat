@@ -16,7 +16,8 @@ import java.util.stream.Collectors;
 public class ReadDataAtomi {
     public static void main(String[] args) throws IOException, ParseException {
 
-        String link = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file25\\atmd_pg_20220826.tsv";
+//        String link = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file25\\atmd_pg_20220826.tsv";
+        String link = "Files-Upload/atmd_pg_20220826.tsv";
         String timeS = "2022-08-25 00:00:00";
         String timeE = "2022-08-25 23:59:59";
 
