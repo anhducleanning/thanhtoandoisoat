@@ -76,7 +76,7 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
         final String link2 = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file25\\Direct-Topup20222608.tsv";
         String TimeS = "25/08/2022 00:00:00";
         String TimeE = "25/08/2022 23:59:59";
-        Map<String, TransEntity> mapTransImedia = imedias.readImedia(TimeS,TimeE,link1,link2);
+        Map<String, TransEntity> mapTransImedia = imedias.readImedia(TimeS,TimeE,link1,link2);//api=>
         totalImedia = mapTransImedia.size();
 
         //Get File Atomi
@@ -170,18 +170,18 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
     }
 
     public Integer compareAndAdd(Map<String,TransEntity> partner1, Map<String,TransEntity> partner2,  List<String> uniqueList, String status){
-        int countAtomi = 0;
-        for (String keyAtomi :  partner1.keySet()) {
-            countAtomi+= partner1.get(keyAtomi).getAMOUNT();
-            if (partner2.keySet().contains(keyAtomi)) {
+        int count = 0;
+        for (String key :  partner1.keySet()) {
+            count+= partner1.get(key).getAMOUNT();
+            if (partner2.keySet().contains(key)) {
                 continue;
-            } else if(partner1.get(keyAtomi).getTRANG_THAI().equals(status)) {
-                uniqueList.add(keyAtomi);
+            } else if(partner1.get(key).getTRANG_THAI().equals(status)) {
+                uniqueList.add(key);
             }else {
-                uniqueList.add(keyAtomi);
+                uniqueList.add(key);
             }
         }
-        return countAtomi;
+        return count;
     }
 
 
