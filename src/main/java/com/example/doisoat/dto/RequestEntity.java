@@ -1,43 +1,21 @@
 package com.example.doisoat.dto;
 
 public class RequestEntity {
-    private String linkAtomi;
-    private String linkImedia1;
-    private String getLinkImedia2;
-    private String periodDate;
 
-    public RequestEntity(String linkAtomi, String linkImedia1, String getLinkImedia2, String periodDate) {
-        this.linkAtomi = linkAtomi;
-        this.linkImedia1 = linkImedia1;
-        this.getLinkImedia2 = getLinkImedia2;
+    private String periodDate;
+    private String dateStart;
+    private String dateEnd;
+
+    private String linkFileSave;
+
+    public RequestEntity(String periodDate, String dateStart, String dateEnd, String linkFileSave) {
         this.periodDate = periodDate;
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+        this.linkFileSave = linkFileSave;
     }
 
     public RequestEntity() {
-    }
-
-    public String getLinkAtomi() {
-        return linkAtomi;
-    }
-
-    public void setLinkAtomi(String linkAtomi) {
-        this.linkAtomi = linkAtomi;
-    }
-
-    public String getLinkImedia1() {
-        return linkImedia1;
-    }
-
-    public void setLinkImedia1(String linkImedia1) {
-        this.linkImedia1 = linkImedia1;
-    }
-
-    public String getGetLinkImedia2() {
-        return getLinkImedia2;
-    }
-
-    public void setGetLinkImedia2(String getLinkImedia2) {
-        this.getLinkImedia2 = getLinkImedia2;
     }
 
     public String getPeriodDate() {
@@ -46,5 +24,29 @@ public class RequestEntity {
 
     public void setPeriodDate(String periodDate) {
         this.periodDate = periodDate;
+    }
+
+    public String getDateStart() {
+        return dateStart;
+    }
+
+    public void setDateStart(String dateStart) {
+        this.dateStart = dateStart;
+    }
+
+    public String getDateEnd() {
+        return dateEnd;
+    }
+
+    public void setDateEnd(String dateEnd) {
+        this.dateEnd = dateEnd;
+    }
+
+    public String getLinkFileSave() {
+        return linkFileSave;
+    }
+
+    public void setLinkFileSave(String linkFileSave) {
+        this.linkFileSave = linkFileSave;
     }
 }

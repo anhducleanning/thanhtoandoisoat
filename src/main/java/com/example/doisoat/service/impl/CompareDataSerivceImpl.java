@@ -1,25 +1,22 @@
 package com.example.doisoat.service.impl;
-
 import com.example.doisoat.ReadDataAtomi;
 import com.example.doisoat.ReadImediaTxt;
 import com.example.doisoat.common.until.Constant;
-import com.example.doisoat.demo.dowloadupload.FileUploadResponse;
-import com.example.doisoat.demo.dowloadupload.FileUploadUtil;
+import com.example.doisoat.common.until.ExceptionConfig;
+import com.example.doisoat.common.until.GlobalConfig;
+import com.example.doisoat.common.until.Util;
+import com.example.doisoat.dto.DataDetail;
 import com.example.doisoat.dto.LinkFilePartern;
-import com.example.doisoat.dto.RequestEntity;
+import com.example.doisoat.dto.ResponseImedia;
 import com.example.doisoat.model.*;
 import com.example.doisoat.reponsitory.CompareResponsitory;
 import com.example.doisoat.service.*;
-import com.example.doisoat.common.until.GlobalConfig;
-import com.example.doisoat.common.until.Util;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -30,9 +27,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,154 +52,180 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
     CompareDataSummarySerivce dataSummarySerivce;
 
 
-
-
     @Override
     @Transactional
-    public List<TransEntity> compare(
+    public ResponseImedia compare(
             MultipartFile fileAtomi,
             MultipartFile fileImedia1,
             MultipartFile fileImedia2
     ) throws IOException {
-        ReadImediaTxt imedias = new ReadImediaTxt();
-        ReadDataAtomi atomi = new ReadDataAtomi();
-        int sessionId = 0;
-        int idImport =0;
-        int totalAtomi = 0;
-        int totalImedia = 0;
-        List<TransEntity> reponse = new ArrayList<>();
-        try {
-            SessionEntity session = new SessionEntity();
-            //Create Session
-            session.setPeriodDate("Theo Ngày");
-            session.setStatus((byte) 1);
-            session.setSystemId1(GlobalConfig.SYS1_ATOMI);
-            session.setSystemId2(GlobalConfig.SYS1_IMEDIA);
-            sessionSerivce.create(session);
-            sessionId = session.getId();
-            log.info("id session - {} ", sessionId);
-        }catch (Exception ex){
-            log.error("Message error - {}", ex.getMessage());
-            throw new RuntimeException(ex.getMessage());
-        }
+        ResponseImedia reponse = new ResponseImedia();
+
+        if(fileAtomi.isEmpty()||fileImedia1.isEmpty()||fileImedia2.isEmpty()){
+             reponse.setReponseCode(ExceptionConfig.VALIDATED.REPONSECODE);
+             reponse.setReponseMessage(ExceptionConfig.VALIDATED.REPONSEMESSAGE);
+             return  reponse;
+        }else if(Util.checkFileType(fileAtomi,GlobalConfig.FILE_TYPE_ATOMI)==false||Util.checkFileType(fileImedia1,GlobalConfig.FILE_TYPE_ATOMI)==false||Util.checkFileType(fileImedia2,GlobalConfig.FILE_TYPE_ATOMI)==false) {
+            reponse.setReponseCode(ExceptionConfig.FILE_TYPE.REPONSECODE);
+            reponse.setReponseMessage(ExceptionConfig.FILE_TYPE.REPONSEMESSAGE);
+            return  reponse;
+
+        }else {
+
+            try{
+                ReadImediaTxt imedias = new ReadImediaTxt();
+                ReadDataAtomi atomi = new ReadDataAtomi();
+                int sessionId = 0;
+                int idImport = 0;
+                int totalAtomi = 0;
+                int totalImedia = 0;
+                List<TransEntity> reponseData = new ArrayList<>();
+                try {
+                    SessionEntity session = new SessionEntity();
+                    //Create Session
+                    session.setPeriodDate("Theo Ngày");
+                    session.setStatus((byte) 1);
+                    session.setSystemId1(GlobalConfig.SYS1_ATOMI);
+                    session.setSystemId2(GlobalConfig.SYS1_IMEDIA);
+                    sessionSerivce.create(session);
+                    sessionId = session.getId();
+                    log.info("id session - {} ", sessionId);
+                } catch (Exception ex) {
+                    log.error("Message error - {}", ex.getMessage());
+                    throw new RuntimeException(ex.getMessage());
+                }
 
 
 //        final String link1 = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file25\\DownloadSoftpin20222608.tsv";
 //        final String link2 = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file25\\Direct-Topup20222608.tsv";
 
 
-        LinkFilePartern linkFile = linkFileUpload(fileAtomi,fileImedia1,fileImedia2);
+                LinkFilePartern linkFile = linkFileUpload(fileAtomi, fileImedia1, fileImedia2);
 
 
-        final String link1 = linkFile.getFileImedia1();
-        final String link2 = linkFile.getFileImedia2();
+                final String link1 = linkFile.getFileImedia1();
+                final String link2 = linkFile.getFileImedia2();
 
 
-        String TimeS = "25/08/2022 00:00:00";
-        String TimeE = "25/08/2022 23:59:59";
-        Map<String, TransEntity> mapTransImedia = imedias.readImedia(TimeS,TimeE,link1,link2);//api=>
-        totalImedia = mapTransImedia.size();
+                String timeS = "2022-08-25 00:00:00";
+                String timeE = "2022-08-25 23:59:59";
 
-        //Get File Atomi
+                String TimeStartImedia = Util.convertTimeImedia(Constant.FomartDate.DATE_FORMAT_ATOMI,Constant.FomartDate.DATE_FORMAT_IMEDIA, timeS);
+                String TimeEndImedia = Util.convertTimeImedia(Constant.FomartDate.DATE_FORMAT_ATOMI,Constant.FomartDate.DATE_FORMAT_IMEDIA, timeE);
+                Map<String, TransEntity> mapTransImedia = imedias.readImedia(TimeStartImedia, TimeEndImedia, link1, link2);
+                totalImedia = mapTransImedia.size();
+
+                //Get File Atomi
 //        String linkAtomi = "C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file25\\atmd_pg_20220826.tsv";
-        String linkAtomi = linkFile.getFileAtomi();
-        String timeS = "2022-08-25 00:00:00";
-        String timeE = "2022-08-25 23:59:59";
-        Map<String,TransEntity> mapTransAtomi =  atomi.readFileAtomi(timeS,timeE,linkAtomi);
-        totalAtomi = mapTransAtomi.size();
-        try {
-            //Create ImportData
-            ImportDataEntity data = new ImportDataEntity();
-            Date date = new Date(System.currentTimeMillis());
-            data.setImportType(GlobalConfig.FILE);
-            data.setImportCode("CODE"+Math.random());
-            data.setSystemCode("SYSTEMCODE"+Math.random());
-            data.setNumberOfTotal(mapTransAtomi.size());
-            data.setNumberOfSuccess(0000000000);
-            data.setNumberOfFail(1);
-            data.setImportBy("Anh Duc");
-            data.setPeriodDate(String.valueOf(date));
-            data.setStatus(GlobalConfig.FILE_WORK);
-            data.setPartnerSystemId(GlobalConfig.PARTNER_ATOMI);
-            data.setSessionId(sessionId);
-            data.setEvidenceFile("File chứng cớ có thể mã hoá");
-            importDataSerivce.createImportData(data);
-            idImport = data.getImportId();
-            log.info("id ImportData - {} ", data.getImportId());
+                String linkAtomi = linkFile.getFileAtomi();
+                Map<String, TransEntity> mapTransAtomi = atomi.readFileAtomi(timeS, timeE, linkAtomi);
+                totalAtomi = mapTransAtomi.size();
+                try {
+                    //Create ImportData
+                    ImportDataEntity data = new ImportDataEntity();
+                    Date date = new Date(System.currentTimeMillis());
+                    data.setImportType(GlobalConfig.FILE);
+                    data.setImportCode("CODE" + Math.random());
+                    data.setSystemCode("SYSTEMCODE" + Math.random());
+                    data.setNumberOfTotal(mapTransAtomi.size());
+                    data.setNumberOfSuccess(0000000000);
+                    data.setNumberOfFail(1);
+                    data.setImportBy("Anh Duc");
+                    data.setPeriodDate(String.valueOf(date));
+                    data.setStatus(GlobalConfig.FILE_WORK);
+                    data.setPartnerSystemId(GlobalConfig.PARTNER_ATOMI);
+                    data.setSessionId(sessionId);
+                    data.setEvidenceFile("File chứng cớ có thể mã hoá");
+                    importDataSerivce.createImportData(data);
+                    idImport = data.getImportId();
+                    log.info("id ImportData - {} ", data.getImportId());
 
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new RuntimeException();
-        }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new RuntimeException();
+                }
 
 
-        //Save Import Data detail
+                //Save Import Data detail
 //        detailService.create((HashMap<String, TransEntity>) mapTransImedia,idImport);
 //        detailService.create((HashMap<String, TransEntity>) mapTransAtomi,idImport);
 
 
-        System.out.println("-----------Compare-----------------");
-        //Check Atomi - > Imedia
-        List<String> uniqueListAtomi = new ArrayList<>();
-        int countAtomi = compareAndAdd(mapTransAtomi,mapTransImedia,uniqueListAtomi,reponse,Constant.Status.STATUS_SUCCES_ATOMI);
+                System.out.println("-----------Compare-----------------");
+                //Check Atomi - > Imedia
+                List<String> uniqueListAtomi = new ArrayList<>();
+                int countAtomi = compareAndAdd(mapTransAtomi, mapTransImedia, uniqueListAtomi, reponseData, Constant.Status.STATUS_SUCCES_ATOMI);
 
 
 
-        System.out.println("Tổng tiền Atomi: "  + countAtomi);
-        System.out.println("Atomi tổng: "+totalAtomi+ " Atomi Lệch : " + uniqueListAtomi.size());
-        BufferedWriter f_writer = new BufferedWriter(new FileWriter("C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file24\\doisoat.txt"));
-        f_writer.write("Atomi tổng: "+totalAtomi+ " Atomi Lệch : " + uniqueListAtomi.size());
-        f_writer.newLine();
+                log.info("Tổng tiền Atomi: " + countAtomi);
+                log.info("Atomi tổng: " + totalAtomi + " Atomi Lệch : " + uniqueListAtomi.size());
+                BufferedWriter f_writer = new BufferedWriter(new FileWriter("C:\\Users\\Administrator\\Desktop\\fileDoiSoat\\file24\\doisoat.txt"));
+                f_writer.write("Atomi tổng: " + totalAtomi + " Atomi Lệch : " + uniqueListAtomi.size());
+                f_writer.newLine();
 
-        //Writer file and add db after compare atomi
-        writeFileAtomi(uniqueListAtomi,f_writer,mapTransAtomi,sessionId);
-
-
-        //Check  Imedia- > Atomi
-        List<String> uniqueListImedia = new ArrayList<>();
-        int countImedia = compareAndAdd(mapTransImedia,mapTransAtomi,uniqueListImedia,reponse, Constant.Status.STATUS_SUCCES_IMEDIA);
+                //Writer file and add db after compare atomi
+                writeFileAtomi(uniqueListAtomi, f_writer, mapTransAtomi, sessionId);
 
 
-        System.out.println("Tổng tiền Imedia: " + countImedia);
-        System.out.println("Imedia tổng: "+totalImedia+" Imedia Lệch : " + uniqueListImedia.size() );
-        f_writer.write("Imedia tổng: "+totalImedia+" Imedia Lệch : " + uniqueListImedia.size() );
-        f_writer.newLine();
+                //Check  Imedia- > Atomi
+                List<String> uniqueListImedia = new ArrayList<>();
+                int countImedia = compareAndAdd(mapTransImedia, mapTransAtomi, uniqueListImedia, reponseData, Constant.Status.STATUS_SUCCES_IMEDIA);
 
-        //Writer file and add db after compare imedia
-        writeFileImedia(uniqueListImedia,f_writer,mapTransImedia,sessionId);
-        f_writer.close();
 
-        //Import Compare Data Summary
-        try {
-            CompareDataSummaryEntity entity = new CompareDataSummaryEntity();
-            Date date = new Date(System.currentTimeMillis());
-            entity.setCompareDate(date);
-            entity.setSys1Records(totalAtomi);
-            entity.setSys2Records(totalImedia);
-            entity.setSys1EqualRecords((totalAtomi-uniqueListAtomi.size()));
-            entity.setDiffStatusRecords(totalAtomi); //=====>Test Loi
-            entity.setDiffAmountRecords(countAtomi); //tổng tiền của atomi
-            entity.setSys1MinusSys2(uniqueListAtomi.size());
-            entity.setSys2MinusSys1(uniqueListImedia.size());
-            dataSummarySerivce.create(entity);
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
+                System.out.println("Tổng tiền Imedia: " + countImedia);
+                System.out.println("Imedia tổng: " + totalImedia + " Imedia Lệch : " + uniqueListImedia.size());
+                f_writer.write("Imedia tổng: " + totalImedia + " Imedia Lệch : " + uniqueListImedia.size());
+                f_writer.newLine();
+
+                //Writer file and add db after compare imedia
+                writeFileImedia(uniqueListImedia, f_writer, mapTransImedia, sessionId);
+                f_writer.close();
+
+                //Import Compare Data Summary
+                try {
+                    CompareDataSummaryEntity entity = new CompareDataSummaryEntity();
+                    Date date = new Date(System.currentTimeMillis());
+                    entity.setCompareDate(date);
+                    entity.setSys1Records(totalAtomi);
+                    entity.setSys2Records(totalImedia);
+                    entity.setSys1EqualRecords((totalAtomi - uniqueListAtomi.size()));
+                    entity.setDiffStatusRecords(totalAtomi); //=====>Test Loi
+                    entity.setDiffAmountRecords(countAtomi); //tổng tiền của atomi
+                    entity.setSys1MinusSys2(uniqueListAtomi.size());
+                    entity.setSys2MinusSys1(uniqueListImedia.size());
+                    dataSummarySerivce.create(entity);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(e.getMessage());
+                }
+
+                //Reponse
+                reponse.setReponseCode(ExceptionConfig.SUCCESS.REPONSECODE);
+                reponse.setReponseMessage(ExceptionConfig.SUCCESS.REPONSEMESSAGE);
+                DataDetail dataDetail = new DataDetail(mapTransAtomi.size(),mapTransImedia.size(),uniqueListAtomi.size(),uniqueListImedia.size());
+               reponse.setDataDetail(dataDetail);
+               reponse.setTransEntities(reponseData);
+                return reponse;
+            }catch (Exception e){
+                throw new RuntimeException();
+            }
         }
 
-        return reponse ;
+
+
     }
 
-    public Integer compareAndAdd(Map<String,TransEntity> partner1, Map<String,TransEntity> partner2,  List<String> uniqueList, List<TransEntity> reponse, String status){
+    public Integer compareAndAdd(Map<String, TransEntity> partner1, Map<String, TransEntity> partner2, List<String> uniqueList, List<TransEntity> reponse, String status) {
         int count = 0;
-        for (String key :  partner1.keySet()) {
-            count+= partner1.get(key).getAMOUNT();
+        for (String key : partner1.keySet()) {
+            count += partner1.get(key).getAMOUNT();
             if (partner2.keySet().contains(key)) {
                 continue;
-            } else if(partner1.get(key).getTRANG_THAI().equals(status)) {
+            } else if (partner1.get(key).getTRANG_THAI().equals(status)) {
                 reponse.add(partner1.get(key));
                 uniqueList.add(key);
-            }else {
+            } else {
                 uniqueList.add(key);
             }
         }
@@ -211,42 +233,42 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
     }
 
 
-   public void writeFileAtomi(List<String> uniqueListAtomi ,  BufferedWriter f_writer,   Map<String,TransEntity> mapTransAtomi, int sessionId){
-        for (String key: uniqueListAtomi) {
+    public void writeFileAtomi(List<String> uniqueListAtomi, BufferedWriter f_writer, Map<String, TransEntity> mapTransAtomi, int sessionId) {
+        for (String key : uniqueListAtomi) {
             try {
-                if(mapTransAtomi.get(key).getTRANG_THAI().equals("EXT-0000")){
-                    saveCompareDataAtomi(mapTransAtomi.get(key),sessionId);
-                    f_writer.write( "**" + String.valueOf(mapTransAtomi.get(key)+"=>Cần xem xét lại"));
+                if (mapTransAtomi.get(key).getTRANG_THAI().equals("EXT-0000")) {
+                    saveCompareDataAtomi(mapTransAtomi.get(key), sessionId);
+                    f_writer.write("**" + String.valueOf(mapTransAtomi.get(key) + "=>Cần xem xét lại"));
                     f_writer.newLine();
-                }else {
-                    saveCompareDataAtomi(mapTransAtomi.get(key),sessionId);
-                    f_writer.write(String.valueOf(mapTransAtomi.get(key)+"=>Thất bại"));
+                } else {
+                    saveCompareDataAtomi(mapTransAtomi.get(key), sessionId);
+                    f_writer.write(String.valueOf(mapTransAtomi.get(key) + "=>Thất bại"));
                     f_writer.newLine();
                 }
-            }catch (IOException e){
+            } catch (IOException e) {
                 System.out.println(e);
             }
 
         }
     }
 
-    public void writeFileImedia(List<String> uniqueListImedia,BufferedWriter f_writer,Map<String,TransEntity> mapTransImedia, int sessionId){
-        for (String key: uniqueListImedia) {
+    public void writeFileImedia(List<String> uniqueListImedia, BufferedWriter f_writer, Map<String, TransEntity> mapTransImedia, int sessionId) {
+        for (String key : uniqueListImedia) {
             try {
-                if(mapTransImedia.get(key).getTRANG_THAI().equals("Thanh Cong")){
-                    saveCompareDataImedia(mapTransImedia.get(key),sessionId);
-                    f_writer.write( "**" + String.valueOf(mapTransImedia.get(key)+"=>Cần xem xét lại"));
+                if (mapTransImedia.get(key).getTRANG_THAI().equals("Thanh Cong")) {
+                    saveCompareDataImedia(mapTransImedia.get(key), sessionId);
+                    f_writer.write("**" + String.valueOf(mapTransImedia.get(key) + "=>Cần xem xét lại"));
                     f_writer.newLine();
                     System.out.println(mapTransImedia.get(key));
                 }
-            }catch (IOException e){
+            } catch (IOException e) {
                 System.out.println(e);
             }
         }
     }
 
     @Override
-    public void saveCompareDataAtomi(TransEntity transEntity,int idSession) {
+    public void saveCompareDataAtomi(TransEntity transEntity, int idSession) {
         Date date = new Date(System.currentTimeMillis());
         CompareDataEntity compareData = new CompareDataEntity();
         compareData.setCompareDate(date);
@@ -267,13 +289,13 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
         compareData.setSys1Id(GlobalConfig.SYS1_ATOMI);
         compareData.setSys2Id(GlobalConfig.SYS1_IMEDIA);
         compareData.setSys2TransId(Long.valueOf(transEntity.getTRANS_ID()));
-        compareData.setSys2TransTime(Timestamp.valueOf(Util.convertTimeImedia( Constant.FomartDate.DATE_FORMAT_IMEDIA,Constant.FomartDate.DATE_FORMAT_ATOMI,transEntity.getDATETIME_LOG())));
+        compareData.setSys2TransTime(Timestamp.valueOf(Util.convertTimeImedia(Constant.FomartDate.DATE_FORMAT_IMEDIA, Constant.FomartDate.DATE_FORMAT_ATOMI, transEntity.getDATETIME_LOG())));
         compareData.setSys2TransStatus(transEntity.getTRANG_THAI());
         compareData.setSessionId(idSession);
         compareResponsitory.save(compareData);
     }
 
-    public LinkFilePartern linkFileUpload(MultipartFile fileAtomi,MultipartFile fileImedia1,MultipartFile fileImedia2) throws IOException {
+    public LinkFilePartern linkFileUpload(MultipartFile fileAtomi, MultipartFile fileImedia1, MultipartFile fileImedia2) throws IOException {
         //Get name file
         String fileNameAtomi = StringUtils.cleanPath(fileAtomi.getOriginalFilename());
         String fileNameImedia1 = StringUtils.cleanPath(fileImedia1.getOriginalFilename());
@@ -283,22 +305,21 @@ public class CompareDataSerivceImpl implements CompareDataSerivce {
         saveFile(fileNameAtomi, fileAtomi);
         saveFile(fileNameImedia1, fileImedia1);
         saveFile(fileNameImedia2, fileImedia2);
-        String linkFileAtomi = "Files-Upload/"+ fileNameAtomi;
-        String linkFileImedia1 = "Files-Upload/"+ fileNameImedia1;
-        String linkFileImedia2 = "Files-Upload/"+ fileNameImedia2;
+        String linkFileAtomi = "Files-Upload/" + fileNameAtomi;
+        String linkFileImedia1 = "Files-Upload/" + fileNameImedia1;
+        String linkFileImedia2 = "Files-Upload/" + fileNameImedia2;
 
-        LinkFilePartern link = new LinkFilePartern(linkFileAtomi,linkFileImedia1,linkFileImedia2);
+        LinkFilePartern link = new LinkFilePartern(linkFileAtomi, linkFileImedia1, linkFileImedia2);
         return link;
     }
-    public  void saveFile(String fileName, MultipartFile multipartFile)
+
+    public void saveFile(String fileName, MultipartFile multipartFile)
             throws IOException {
         Path uploadPath = Paths.get("Files-Upload");
 
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
-
-        String fileCode = RandomStringUtils.randomAlphanumeric(8);
 
         try (InputStream inputStream = multipartFile.getInputStream()) {
             Path filePath = uploadPath.resolve(fileName);

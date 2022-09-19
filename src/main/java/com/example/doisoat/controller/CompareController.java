@@ -2,6 +2,7 @@ package com.example.doisoat.controller;
 
 import com.example.doisoat.demo.dowloadupload.FileUploadResponse;
 import com.example.doisoat.dto.LinkFilePartern;
+import com.example.doisoat.dto.ResponseImedia;
 import com.example.doisoat.model.TransEntity;
 import com.example.doisoat.service.*;
 import com.example.doisoat.service.impl.CompareDataSerivceImpl;
@@ -31,17 +32,16 @@ public class CompareController {
     CompareDataSerivceImpl serivce;
 
     @PostMapping ("/compare")
-    public ResponseEntity<List<TransEntity>> compare(
+    public ResponseEntity<ResponseImedia> compare(
             @RequestParam("fileAtomi") MultipartFile fileAtomi,
             @RequestParam("fileImedia1") MultipartFile fileImedia1 ,
             @RequestParam("fileImedia2") MultipartFile fileImedia2) throws IOException {
-//        compareDataSerivce.compare(fileAtomi,fileImedia1,fileImedia2);
         return new ResponseEntity<>( compareDataSerivce.compare(fileAtomi,fileImedia1,fileImedia2), HttpStatus.OK);
    }
 
 
 //    @PostMapping("/upfile")
-//    public  ResponseEntity<List<LinkFilePartern>> uploadFile(
+//    public  ResponseEntity<LinkFilePartern>> uploadFile(
 //            @RequestParam("fileAtomi") MultipartFile fileAtomi,
 //            @RequestParam("fileImedia1") MultipartFile fileImedia1 ,
 //            @RequestParam("fileImedia2") MultipartFile fileImedia2

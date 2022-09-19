@@ -19,5 +19,7 @@ public class GlobalConfig {
     public static final int PARTNER_IMEDIA =3;
 
 
+    public static final String FILE_TYPE_ATOMI = "tsv";
+
 
 }

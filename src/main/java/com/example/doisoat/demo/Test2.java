@@ -1,23 +1,18 @@
 package com.example.doisoat.demo;
 
+import com.example.doisoat.common.until.Constant;
+import com.example.doisoat.common.until.Util;
+
 import java.util.*;
 
 public class Test2 {
 
-    public static Long a = 0l;
+
     public static void main(String[] args) {
-        List<Integer> list = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            list.add(i);
-        }
+        String TimeS = "25/08/2022 00:00:00";
+        String timeAtomi = "2022-08-25 00:00:00";
+        System.out.println(Util.convertTimeImedia(Constant.FomartDate.DATE_FORMAT_ATOMI,Constant.FomartDate.DATE_FORMAT_IMEDIA, timeAtomi));
 
-        for (int i = 3; i < 10; i++) {
-            list.add(i);
-        }
-
-        for (Integer index:list) {
-            System.out.println(index);
-        }
     }
 
 }

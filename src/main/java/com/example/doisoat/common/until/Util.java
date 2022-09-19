@@ -1,5 +1,8 @@
 package com.example.doisoat.common.until;
 
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -81,6 +84,16 @@ public class Util {
             return part1;
         }
         return text;
+    }
+
+    public static boolean checkFileType(MultipartFile linkFile, String fileType ){
+        //Get name file
+        String file = StringUtils.cleanPath(linkFile.getOriginalFilename());
+        if(file.endsWith(fileType)){
+           return true;
+        }else {
+            return false;
+        }
     }
 
     public static String splitComma(String str){
